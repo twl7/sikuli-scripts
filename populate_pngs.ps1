@@ -4,8 +4,8 @@ function populate_png_manifest($directory){
 	$null > $txt_file
 	$L = Resolve-Path $directory | %{$_.Path.length + 1}
 	get-childitem -Recurse $directory *.png | ForEach-Object {
-		$relative_path = $_.FullName.substring($L);
-		$constant = $relative_path.replace("\","_").split(".")[0].ToUpper();
+		$relative_path = $_.FullName.substring($L).split(".")[0].replace("\","/");
+		$constant = $relative_path.replace("/","_").ToUpper();
 		echo "$constant $relative_path" | Out-File -Encoding Unicode -append $txt_file
 		}
 	

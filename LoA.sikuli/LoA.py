@@ -4,56 +4,48 @@ import sikuli_tools
 reload(sikuli_tools)
 from sikuli_tools import *
 
-SikuliInterface(
-    find = find,findAll = findAll,wait = wait, waitVanish = waitVanish, exists = exists, 
-    click = click, doubleClick = doubleClick,rightClick = rightClick, hover = hover,
-    dragDrop = dragDrop, type = type, paste = paste
-    )
-KeyInterface(Key,KeyModifier)
-
 ### SETTINGS
 Settings.MinSimilarity = 0.83
-Settings.MoveMouseDelay = 0.3
+Settings.MoveMouseDelay = 0.1
 ### /SETTINGS
 
 def auto_battle():    
-    click_best_match("battle/auto_fight.png",100)
+    click_best_match(png.battle_auto_fight,90)
     
-    click_best_match("battle/pass_fight.png",10)
-    if(click_best_match("battle/fail.png",2)):
-        waitVanish("battle/fail.png",2)
-    if(click_best_match("battle/success.png",2)):
-        waitVanish("battle/success.png",2)
+    click_best_match(png.battle_pass_fight,10)
+    fail = png.battle_fail
+    if(click_best_match(fail,2)):
+        waitVanish(fail,2)
+        return 0
+    success = png.battle_success
+    if(click_best_match(success,2)):
+        waitVanish(success,2)
+        return 1
     
     
 def return_to_main_screen():
-    for i in xrange(3):
-        for png in ["buttons/close_button_small.png","buttons/close_button.png","buttons/return_button"]:
-            click_best_match(png)
+    
+    for png in ["buttons/close_button_small.png","buttons/close_button.png","buttons/return_button"]:
+        click_best_match(png,1)
         
 def clear_invasions():
     return_to_main_screen()
-    click_best_match("mainscreen/adventure.png")
+    inv_s = png.ADVENTURE_INVASION_SMALL
+    inv = png.ADVENTURE_INVASION_LARGE 
+    click_best_match(png.MAINSCREEN_ADVENTURE)
     for iter in xrange(15): #number of stages minus 5
-        while(exists("adventure/invasion_small.png",1)):
-            click_best_match("adventure/invasion_small.png")
-            if(exists("adventure/invasion_large.png",1)):
-                if(click_best_match("adventure/invasion_large.png")):
+        while(exists(inv_s,1)):
+            click_best_match(inv_s)
+            if(exists(inv,1)):
+                if(click_best_match(inv)):
                     auto_battle()
-        click_best_match("adventure/scroll_left_button.png")
+        click_best_match(png.ADVENTURE_SCROLL_LEFT_BUTTON)
     return_to_main_screen()
 
 
-def buy_starter_pack():
-    pass
-def get_honor():
-    click_all()
     
 
-def fight_dungeon():
-    pass
 
 ### ROUTINE GOES HERE
-
-clear_invasions()
+click_best_match(png.BUTTONS_CLOSE_BUTTON_SMALL,1)
     

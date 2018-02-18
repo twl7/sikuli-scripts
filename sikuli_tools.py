@@ -18,95 +18,22 @@ class SingletonClass(object):
         
     @classmethod
     def get_instance(cls):
+        if(cls.instance == None):
+            cls.set_instance(cls())
         return cls.instance
     @classmethod
-    def set_instance(cls, inst):
-        cls.instance = inst
-
-
-      
-class SikuliInterface(SingletonClass):    
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
-        super(SikuliInterface, self).__init__()
+    def set_instance(cls, instance):
+        cls.instance = instance
         
 class KeyInterface(SingletonClass):    
-    def __init__(self, key_class, key_modifier_class):
+    def __init__(self, key_class = Key , key_modifier_class = KeyModifier):
         self.Key = key_class
         self.KeyModifier = key_modifier_class
         super(KeyInterface, self).__init__()
-            
-def get_all_matches(search_image):
-    instance = SikuliInterface.get_instance()
-    if(instance.exists(search_image)):
-        return instance.findAll(search_image)
-    return []
-get_all = get_all_matches
-
-def click_all(image):
-    instance = SikuliInterface.get_instance()
-
-    times_clicked = 0            
-    for match in get_all_matches(image):
-        instance.click(match)
-        times_clicked +=1
-        time.sleep(1)
-        
-    return times_clicked
-
-
-def click_best_match(image,timeout = 0):
-    instance = SikuliInterface.get_instance()
-    
-    try:
-        if(instance.exists(image,timeout)):
-            instance.click(image)
-            return True
-    except:
-        pass
-    return False
-
-### BROWSER TAB FUNCTIONS
-def switch_tab_right():
-    ki = KeyInterface.get_instance()
-    SikuliInterface.get_instance().type(ki.Key.TAB, ki.KeyModifier.CTRL)
-    
-def switch_tab_left():
-    ki = KeyInterface.get_instance()
-    SikuliInterface.get_instance().type(ki.Key.TAB, ki.KeyModifier.CTRL + ki.KeyModifier.SHIFT)
-    return 
-def switch_browser_tabs(distance):
-    for i in xrange(distance):
-        switch_tab_right()
-    for i in xrange(distance,0):
-        switch_tab_left()
-        
-def close_current_tab():
-    ki = KeyInterface.get_instance()
-    SikuliInterface.instance.type("W", ki.KeyModifier.CTRL)
-
-        
-
-
-### /BROWSER TAB FUNCTIONS
-
-
-
-###Miscellaneous
-def write_to_file(filename,options,content):
-    fi = open(current_directory + "\\" + filename,options)
-    fi.write(str(content) + "\n")
-    fi.close()
-
-
-
-
-
-
 
 class SikuliRegionInterface(SingletonClass):
-    def __init__(self):
-        self.region = SCREEN        
+    def __init__(self,region = Screen()):
+        self.region = region        
         super(SikuliRegionInterface,self).__init__()
 
     def get_all_matches(self,search_image):
@@ -137,48 +64,53 @@ class SikuliRegionInterface(SingletonClass):
             pass
         return False
 
-    
-    def switch_tab_right():
+    def switch_tab_right(self):
         ki = KeyInterface.get_instance()
-        SikuliInterface.get_instance().type(ki.Key.TAB, ki.KeyModifier.CTRL)
-        
-    def switch_tab_left():
+        self.region.type(ki.Key.TAB, ki.KeyModifier.CTRL)
+        return
+    def switch_tab_left(self):
         ki = KeyInterface.get_instance()
-        SikuliInterface.get_instance().type(ki.Key.TAB, ki.KeyModifier.CTRL + ki.KeyModifier.SHIFT)
+        self.region.type(ki.Key.TAB, ki.KeyModifier.CTRL + ki.KeyModifier.SHIFT)
         return 
-    def switch_browser_tabs(distance):
+    def switch_browser_tabs(self,distance):
         for i in xrange(distance):
-            switch_tab_right()
+            switch_tab_right(self,)
         for i in xrange(distance,0):
-            switch_tab_left()
+            switch_tab_left(self)
             
-    def close_current_tab():
+    def close_current_tab(self):
         ki = KeyInterface.get_instance()
-        SikuliInterface.instance.type("W", ki.KeyModifier.CTRL)
+        self.type("W", ki.KeyModifier.CTRL)
 
 
 def SRI():
     return SikuliRegionInterface.get_instance()
 
-
+###
 def png_manifest():
-    class filler_object(object):
+    class png_object(object):
         def __init__(self):
             try:
-                Debug.log(current_directory + "\\png_manifest")
-                with io.open(current_directory + "\\png_manifest","r",encoding="UTF-16") as pngs:
+                file_path = current_directory + "/png_manifest"
+                Debug.log("opening " + file_path)
+                with io.open(file_path,"r",encoding="UTF-16") as pngs:
                     for line in pngs:
                         arr = line.split(" ")
                         if(len(arr) < 2):
                             continue
-                        constant = arr[0]
-                        path = arr[1]
-                        Debug.log(constant + " " + path)
+                        constant = arr[0].strip().upper()
+                        path = arr[1].strip()
                         setattr(self,constant,path)
+                        setattr(self,constant.lower(),path)
                 
             except Exception as e:
                 logging.error(e, exc_info=True)
                 Debug.log("FAILED TO POPULATE")
     
-    return filler_object() 
+    return png_object() 
 
+###Miscellaneous
+def write_to_file(filename,options,content):
+    fi = open(current_directory + "\\" + filename,options)
+    fi.write(str(content) + "\n")
+    fi.close()
