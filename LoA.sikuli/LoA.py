@@ -5,47 +5,33 @@ reload(sikuli_tools)
 from sikuli_tools import *
 
 ### SETTINGS
-Settings.MinSimilarity = 0.83
-Settings.MoveMouseDelay = 0.1
+Settings.MinSimilarity = 0.75
+Settings.MoveMouseDelay = 0.15
+Settings.OcrTextSearch = True
+Settings.OcrTextRead = True
 ### /SETTINGS
 
-def auto_battle():    
-    click_best_match(png.battle_auto_fight,90)
-    
-    click_best_match(png.battle_pass_fight,10)
-    fail = png.battle_fail
-    if(click_best_match(fail,2)):
-        waitVanish(fail,2)
-        return 0
-    success = png.battle_success
-    if(click_best_match(success,2)):
-        waitVanish(success,2)
-        return 1
-    
-    
-def return_to_main_screen():
-    
-    for png in ["buttons/close_button_small.png","buttons/close_button.png","buttons/return_button"]:
-        click_best_match(png,1)
-        
-def clear_invasions():
+### PARAMETERS
+towers = range(2,9)
+###
+### SET UP YOUR ROUTINE HERE
+
+def routine():
     return_to_main_screen()
-    inv_s = png.ADVENTURE_INVASION_SMALL
-    inv = png.ADVENTURE_INVASION_LARGE 
-    click_best_match(png.MAINSCREEN_ADVENTURE)
-    for iter in xrange(15): #number of stages minus 5
-        while(exists(inv_s,1)):
-            click_best_match(inv_s)
-            if(exists(inv,1)):
-                if(click_best_match(inv)):
-                    auto_battle()
-        click_best_match(png.ADVENTURE_SCROLL_LEFT_BUTTON)
-    return_to_main_screen()
-
-
+    complete_honor()
+    #complete_events()
+    complete_activity()
+    clear_invasions()
+    fight_dungeon()
     
-
-
-### ROUTINE GOES HERE
-click_best_match(png.BUTTONS_CLOSE_BUTTON_SMALL,1)
-    
+windows = 2   
+for i in xrange(windows):
+    for image in [png.container_other_server,png.container_new_server]:
+        pattern = Pattern(image).similar(0.7)
+        while(not sri.click_best_match(Pattern(png.container_select_server).similar(0.60),3)):
+            pass
+        sri.click_best_match(pattern,20)
+        #type("r",KeyModifier.CTRL)
+        sleep(20)
+        routine()
+    type(Key.TAB,KeyModifier.ALT)
