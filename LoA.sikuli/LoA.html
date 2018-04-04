@@ -1,0 +1,115 @@
+
+<html>
+   <head>
+      <style type="text/css">
+         .sikuli-code {
+            font-size: 20px;
+            font-family: "Osaka-mono", Monospace;
+            line-height: 1.5em;
+            display:table-cell;
+            white-space: pre-wrap;       /* css-3 */
+            white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+            width: 99%;   /* remove horizontal scroll-bar when viewing in IE7 */
+         }
+         .sikuli-code img {
+            vertical-align: middle;
+            margin: 2px;
+            border: 1px solid #ccc;
+            padding: 2px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-box-shadow: 1px 1px 1px gray;
+            -webkit-box-shadow: 1px 1px 2px gray;
+         }
+         .kw {
+            color: blue;
+         }
+         .skw {
+            color: rgb(63, 127, 127);
+         }
+
+         .str {
+            color: rgb(128, 0, 0);
+         }
+
+         .dig {
+            color: rgb(128, 64, 0);
+         }
+
+         .cmt {
+            color: rgb(200, 0, 200);
+         }
+
+         h2 {
+            display: inline;
+            font-weight: normal;
+         }
+
+         .info {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            display: none;
+         }
+
+         a {
+            color: #9D2900;
+         }
+
+         body {
+            font-family: "Trebuchet MS", Arial, Sans-Serif;
+         }
+
+      </style>
+   </head>
+<body>
+<div class="info">
+<h2>LoA.sikuli</h2> <a href="LoA.zip">(Download this script)</a>
+</div>
+<pre class="sikuli-code">
+<span class="kw">from</span> loa_basic <span class="kw">import</span> *
+
+<span class="kw">import</span> sikuli_tools
+reload(sikuli_tools)
+<span class="kw">from</span> sikuli_tools <span class="kw">import</span> *
+
+<span class="cmt">### SETTINGS</span>
+Settings.MinSimilarity = <span class="dig">0.75</span>
+Settings.MoveMouseDelay = <span class="dig">0.15</span>
+Settings.OcrTextSearch = True
+Settings.OcrTextRead = True
+<span class="cmt">### /SETTINGS</span>
+
+<span class="cmt">### PARAMETERS</span>
+towers = range(<span class="dig">8</span>,<span class="dig">1</span>,-<span class="dig">1</span>)
+<span class="cmt">###</span>
+
+<span class="cmt">### SET UP YOUR ROUTINE HERE</span>
+
+<span class="kw">def</span> routine():
+    return_to_main_screen()
+    complete_honor()
+    complete_events()
+    complete_activity()
+    clear_invasions()
+    clear_dungeon()
+windows = <span class="dig">1</span>
+last_login = Pattern(png.container_server_last_login).similar(<span class="dig">0.95</span>)
+<span class="kw">for</span> i <span class="kw">in</span> xrange(windows):
+    <span class="kw">for</span> image <span class="kw">in</span> [png.container_server_kong_kings_landing,png.container_server_kong_winterfell]:
+        pattern = Pattern(image).similar(<span class="dig">0.95</span>)
+
+        <span class="kw">while</span>(<span class="kw">not</span> sri.click_best_match(Pattern(png.container_select_server).similar(<span class="dig">0.60</span>),<span class="dig">3</span>)):
+            <span class="kw">pass</span>
+        <span class="kw">if</span>(<span class="kw">not</span> sri.click_best_match(pattern,<span class="dig">10</span>)):
+            sri.click_best_match(last_login,<span class="dig">10</span>)
+        <span class="cmt">#type("r",KeyModifier.CTRL)</span>
+        <span class="skw">sleep</span>(<span class="dig">20</span>)
+        routine()
+    <span class="skw">type</span>(Key.TAB,KeyModifier.ALT)
+</pre>
+</body>
+</html>

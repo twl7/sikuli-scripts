@@ -1,0 +1,115 @@
+
+<html>
+   <head>
+      <style type="text/css">
+         .sikuli-code {
+            font-size: 20px;
+            font-family: "Osaka-mono", Monospace;
+            line-height: 1.5em;
+            display:table-cell;
+            white-space: pre-wrap;       /* css-3 */
+            white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+            width: 99%;   /* remove horizontal scroll-bar when viewing in IE7 */
+         }
+         .sikuli-code img {
+            vertical-align: middle;
+            margin: 2px;
+            border: 1px solid #ccc;
+            padding: 2px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-box-shadow: 1px 1px 1px gray;
+            -webkit-box-shadow: 1px 1px 2px gray;
+         }
+         .kw {
+            color: blue;
+         }
+         .skw {
+            color: rgb(63, 127, 127);
+         }
+
+         .str {
+            color: rgb(128, 0, 0);
+         }
+
+         .dig {
+            color: rgb(128, 64, 0);
+         }
+
+         .cmt {
+            color: rgb(200, 0, 200);
+         }
+
+         h2 {
+            display: inline;
+            font-weight: normal;
+         }
+
+         .info {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            display: none;
+         }
+
+         a {
+            color: #9D2900;
+         }
+
+         body {
+            font-family: "Trebuchet MS", Arial, Sans-Serif;
+         }
+
+      </style>
+   </head>
+<body>
+<div class="info">
+<h2>RoM.sikuli</h2> <a href="RoM.zip">(Download this script)</a>
+</div>
+<pre class="sikuli-code">
+<span class="kw">from</span> rom_basic <span class="kw">import</span> *
+
+<span class="kw">import</span> sikuli_tools
+reload(sikuli_tools)
+<span class="kw">from</span> sikuli_tools <span class="kw">import</span> *
+
+<span class="cmt">### SETTINGS</span>
+Settings.MinSimilarity = <span class="dig">0.83</span>
+Settings.MoveMouseDelay = <span class="dig">0.05</span>
+<span class="cmt">### /SETTINGS</span>
+
+
+<span class="cmt">### PARAMETERS - Modify this area to set certain priorities</span>
+epic_trades = [ png.fzone_energy_to_epic,
+                png.fzone_magic_to_epic,
+                png.fzone_soul_to_epic]
+gold_trades =  [png.fzone_good_to_gold,
+                png.fzone_rare_to_gold,
+                png.fzone_epic_to_gold,
+                png.FZONE_SILVER_TO_GOLD]
+<span class="cmt">#silver_trades = [png.fzone_elixir_to_silver]</span>
+fzone_trades = epic_trades+gold_trades
+<span class="cmt">### /PARAMETERS</span>
+
+<span class="cmt">#SET UP YOUR ROUTINE HERE</span>
+
+
+<span class="cmt">#run_bosses(1,26)</span>
+<span class="cmt">#sri.switch_tab_left()</span>
+<span class="cmt">#run_bosses(2,30)</span>
+<span class="cmt">#sri.switch_tab_right()</span>
+run_bosses(<span class="dig">1</span>,<span class="dig">200</span>)
+<span class="cmt">#run_world_boss(2,40)</span>
+<span class="kw">def</span> fz_boss():
+    <span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">10</span>):
+        run_bosses(<span class="dig">2</span>,<span class="dig">16</span>)
+        make_fzone_trades(<span class="dig">1</span>,gold_trades,<span class="dig">1</span>,<span class="dig">1</span>)
+<span class="cmt">#fz_boss()</span>
+<span class="cmt">#make_fzone_trades(3,fzone_trades,1000)</span>
+
+</pre>
+</body>
+</html>

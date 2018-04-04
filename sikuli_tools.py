@@ -34,9 +34,13 @@ class KeyInterface(SingletonClass):
 
 class SikuliRegionInterface(SingletonClass):
     def __init__(self,region = Screen()):
-        self.region = region        
-        super(SikuliRegionInterface,self).__init__()
+        self.region = region
 
+        #match memory carries the last match from searching a pattern.
+        #This match may not be tied to self.region
+        self.match_memory = dict()
+
+        super(SikuliRegionInterface,self).__init__()
 
     def set_region(self,region):
         self.region = region
@@ -46,22 +50,54 @@ class SikuliRegionInterface(SingletonClass):
 
     ## Interface
 
-    def exists(self,pattern, timeout = 0):
+    def exists(self,pattern, timeout = 0,region = None):
+        if(region == None):
+            region = self.region
         try:
-            return self.region.exists(pattern,timeout)
+            found = region.exists(pattern,timeout)
+            if(found):
+                self.match_memory[pattern] = region.getLastMatch()
+            return found
         except:
             Debug.log("Failed to find pattern " + str(pattern))
         return False
         
-    def click(self,pattern,timeout = 0):
+    def click(self,pattern,timeout = 0,region = None, last_match = False):
+        if(region == None):
+            region = self.region
+            
+        mm = self.match_memory
         try:
-            if(self.exists(patterm,timeout)):
-                self.region.click(self.region.getLastMatch())
+            if(last_match and pattern in mm):
+                if(mm[pattern].exists(pattern)):
+                    region.click(mm[pattern])
+                    return True
+                
+            if(self.exists(pattern,timeout)):
+                region.click(mm[pattern])
                 return True
         except:
             pass
         return False
 
+    def find(self,pattern,timeout = 0,region = None):
+        if(region == None):
+            region = self.region
+        if(self.exists(pattern,timeout,region)):
+            return self.match_memory[pattern]
+        return None
+        
+    def wait(self,pattern,timeout = 0):
+        try:
+            self.region.wait(pattern,timeout)
+            return True
+        except:
+            return False
+        
+        
+    def waitVanish(self,pattern,timeout = 0):
+        self.region.waitVanish(pattern,timeout)
+        
     def type(self,keys,key_modifiers):
         self.region.type(keys,key_modifiers)
         
@@ -69,12 +105,15 @@ class SikuliRegionInterface(SingletonClass):
 
         
     
-    def get_all_matches(self,search_image, region = None):
+    def find_all(self,search_image, region = None):
         if(region == None):
             region = self.region
-        
-        if(region.exists(search_image)):
-            return region.findAll(search_image)
+
+        try:
+            if(region.exists(search_image)):
+                return region.findAll(search_image)
+        except:
+            pass
         return []
 
     def click_all(self,image,wait_between = 0,region = None):
@@ -82,14 +121,15 @@ class SikuliRegionInterface(SingletonClass):
             region = self.region
         
         times_clicked = 0            
-        for match in self.get_all_matches(image,region):
-            region.click(match)
+        for match in self.find_all(image,region):
+            self.click(match,0,region,False)
             times_clicked +=1
             time.sleep(wait_between)
             
         return times_clicked
     
     def find_best_match(self,image,timeout = 0, region = None):
+        """
         if(region == None):
             region = self.region
             
@@ -101,8 +141,12 @@ class SikuliRegionInterface(SingletonClass):
             pass
         
         return match
+        """
+        
+        return self.find(image,timeout,region)
     
     def click_best_match(self,image,timeout = 0,region = None):
+        """
         if(region == None):
             region = self.region
             
@@ -111,6 +155,8 @@ class SikuliRegionInterface(SingletonClass):
             return False
         region.click(match)
         return True
+        """
+        return self.click(image,timeout,region,True)
 
     ### BROWSER INTERACTION
     def switch_tab_right(self):
