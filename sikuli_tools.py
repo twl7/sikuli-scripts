@@ -65,19 +65,19 @@ class SikuliRegionInterface(SingletonClass):
     def click(self,pattern,timeout = 0,region = None, last_match = False):
         if(region == None):
             region = self.region
-            
-        mm = self.match_memory
+
+        mm = self.match_memory 
         try:
-            if(last_match and pattern in mm):
-                if(mm[pattern].exists(pattern)):
-                    region.click(mm[pattern])
-                    return True
-                
-            if(self.exists(pattern,timeout)):
+            if(last_match and pattern in mm and mm[pattern].nearby(5).exists(pattern)):
                 region.click(mm[pattern])
+                return True
+                
+            if(self.exists(pattern,timeout,region)):
+                region.click(pattern)
                 return True
         except:
             pass
+        Debug.log("Could not click pattern \"{}\"".format(str(pattern)))
         return False
 
     def find(self,pattern,timeout = 0,region = None):
@@ -85,6 +85,7 @@ class SikuliRegionInterface(SingletonClass):
             region = self.region
         if(self.exists(pattern,timeout,region)):
             return self.match_memory[pattern]
+        Debug.log("Could not find pattern \"{}\"".format(str(pattern)))
         return None
         
     def wait(self,pattern,timeout = 0):
@@ -92,6 +93,7 @@ class SikuliRegionInterface(SingletonClass):
             self.region.wait(pattern,timeout)
             return True
         except:
+            Debug.log("Pattern \"{}\" did not appear after {} seconds".format(str(pattern),str(timeout)))
             return False
         
         
@@ -100,7 +102,9 @@ class SikuliRegionInterface(SingletonClass):
         
     def type(self,keys,key_modifiers):
         self.region.type(keys,key_modifiers)
-        
+
+    def hover(self,location):
+        self.region.hover(location)
     ## /Interface
 
         
@@ -156,7 +160,7 @@ class SikuliRegionInterface(SingletonClass):
         region.click(match)
         return True
         """
-        return self.click(image,timeout,region,True)
+        return self.click(image,timeout,region,False)
 
     ### BROWSER INTERACTION
     def switch_tab_right(self):

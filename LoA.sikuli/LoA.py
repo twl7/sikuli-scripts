@@ -21,7 +21,7 @@ def routine():
     return_to_main_screen()
     complete_honor()
     #complete_events()
-    complete_activity()
+    #complete_activity()
     clear_invasions()
     clear_dungeon()
 
@@ -37,6 +37,6 @@ for i in xrange(windows):
         if(not sri.click_best_match(pattern,10)):
             sri.click_best_match(last_login,10)
         #type("r",KeyModifier.CTRL)
-        sleep(30)
+        sleep(20)
         routine()
     type(Key.TAB,KeyModifier.ALT)
