@@ -12,6 +12,7 @@ import datetime
 
 sri = SRI()
 png = png_manifest(sys.path[0])
+hover_location = sri.find(png.CONTAINER_SERVER).getCenter().offset(0,-80)
 
 def return_to_main_screen():
     for button in []:
@@ -19,6 +20,14 @@ def return_to_main_screen():
         pass
     pass
 
+def auto_battle(wait_time = 10):
+    
+    reshuffle = Pattern(png.BATTLE_RESHUFFLE_PROMPT).similar(0.5).targetOffset(60,30)
+    if(sri.exists(reshuffle,max(0,wait_time))):
+        sri.click(reshuffle) 
+        sri.hover(hover_location)
+        sri.region.waitVanish(reshuffle,0.5)
+    sri.click(png.BATTLE_AUTO_BUTTON,0.5)
 
 def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_time = 3600):
     exchange = Pattern(png.fzone_exchange).similar(0.99)
@@ -34,8 +43,12 @@ def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_ti
                         break
                     sleep(0.6)
             regions = []
+            to_click = True
             for trade in trade_array:
                 if(sri.exists(trade)):
+                    if(to_click):
+                        sri.click(sri.getLastMatch())
+                        to_click = False
                     Debug.log(str(trade))
                     regions += sri.find_all(trade)
             for r in regions:
@@ -53,6 +66,7 @@ def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_ti
         
         
 def tab_bosses(time):
+    current_time = lambda : datetime.datetime.now()
     hover_location = sri.find(png.CONTAINER_SERVER).getCenter().offset(0,-80)
     b_r_b = png.BOSS_READY_BUTTON
     b_g_b = png.BOSS_GO_BUTTON
@@ -61,13 +75,14 @@ def tab_bosses(time):
 
     
     timing = current_time()
-    while((current_time() - timing).total_seconds < time):
-        for pngs in [victory,b_r_b,b_g_b]:
-            sri.click_best_match(pngs)
-        
-        if(sri.click_best_match(reshuffle)):
-            sri.hover(hover_location)
-            sri.click_best_match(png.BATTLE_AUTO_BUTTON)
+    while((current_time() - timing).total_seconds() < time):
+        sri.click(victory)
+        if(sri.click(b_r_b)):
+            pass
+        elif(sri.click(b_g_b,1)):
+            auto_battle(10)
+        else:
+            auto_battle(0)
 
         sri.switch_tab_right()
         
@@ -80,7 +95,7 @@ def run_bosses(number_of_tabs,number_of_fights):
     hover_location = sri.region.find(png.CONTAINER_SERVER).getCenter().offset(0,-80)
     b_r_b = png.BOSS_READY_BUTTON
     b_g_b = png.BOSS_GO_BUTTON
-    reshuffle = Pattern(png.BATTLE_RESHUFFLE_PROMPT).similar(0.5).targetOffset(60,30)
+    
     boss_button = b_g_b if number_of_tabs == 1 else b_r_b
     
     current_time = lambda : datetime.datetime.now()
@@ -89,16 +104,13 @@ def run_bosses(number_of_tabs,number_of_fights):
             sri.click_best_match(b_r_b,2)
             sri.switch_tab_left()
     
-        sri.click_best_match(b_g_b,10)
+        sri.click(b_g_b,10)
         
         for tab in xrange(number_of_tabs):
-            if(sri.region.exists(reshuffle,10-8*tab)):
-                sri.click_best_match(reshuffle) 
-                sri.region.hover(hover_location)
-                sri.region.waitVanish(reshuffle,1)     
-            sri.click_best_match(png.BATTLE_AUTO_BUTTON,2)
+            auto_battle(10-8*tab)
             
             sri.switch_tab_right()
+            
         sri.switch_tab_left()
         sri.hover(hover_location)
         
@@ -124,29 +136,35 @@ def run_world_boss(number_of_tabs,number_of_fights):
     for iteration in xrange(number_of_fights):
                         
         sri.exists(b_g_b,5)
-        sri.click_best_match(b_g_b)
+        sri.click(b_g_b,last_match = True)
         
         for tab in xrange(number_of_tabs):
-            reshuffle = Pattern(png.BATTLE_RESHUFFLE_PROMPT).similar(0.5).targetOffset(60,30)
-                
-            if(sri.exists(reshuffle,max(0,10-8*tab))):
-                sri.click_best_match(reshuffle) 
-                sri.region.hover(hover_location)
-                sri.region.waitVanish(reshuffle,1)     
-            sri.click_best_match(png.BATTLE_AUTO_BUTTON,2)
+            auto_battle(10-8*tab)
             
             sri.switch_tab_right()
         sri.switch_browser_tabs(-1*number_of_tabs)
         sri.hover(hover_location)
         sri.exists(boss_button,1000)
         
-def auto_tower():
-    return_to_main_screen()
+def auto_towers(win_limit):
+    victory = png.battle_victory
+    c_b = png.tower_continue_button
+    s_b = png.tower_start_button
+    free_attempt = Pattern(png.tower_free_attempt).similar(0.95)
     
-    pass
-
-
-
+    current_wins = 0
+    
+    while(current_wins < win_limit):
+        current_wins += sri.click(victory)
+        
+        if(sri.exists(free_attempt)):
+            sri.click(s_b)
+        else:
+            sri.click(c_b)
+        auto_battle(3)
+        sri.switch_tab_right()
+        sleep(1)
+        
 def complete_maps():
     pass
 

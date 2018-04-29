@@ -33,6 +33,8 @@ class KeyInterface(SingletonClass):
         super(KeyInterface, self).__init__()
 
 class SikuliRegionInterface(SingletonClass):
+    default_region = Screen()
+    
     def __init__(self,region = Screen()):
         self.region = region
 
@@ -41,13 +43,13 @@ class SikuliRegionInterface(SingletonClass):
         self.match_memory = dict()
 
         super(SikuliRegionInterface,self).__init__()
-
+        
     def set_region(self,region):
         self.region = region
 
     def reset_region(self):
-        self.region = Screen()
-
+        self.region = SikuliRegionInterface.default_region
+    
     ## Interface
 
     def exists(self,pattern, timeout = 0,region = None):
@@ -80,10 +82,12 @@ class SikuliRegionInterface(SingletonClass):
         Debug.log("Could not click pattern \"{}\"".format(str(pattern)))
         return False
 
-    def find(self,pattern,timeout = 0,region = None):
+    def find(self,pattern,timeout = 0,region = None,last_match = False):
         if(region == None):
             region = self.region
-        if(self.exists(pattern,timeout,region)):
+        find_last_match = last_match and pattern in self.match_memory and self.exists(pattern,0,self.match_memory[pattern])
+        
+        if(find_last_match or self.exists(pattern,timeout,region)):
             return self.match_memory[pattern]
         Debug.log("Could not find pattern \"{}\"".format(str(pattern)))
         return None
@@ -105,9 +109,15 @@ class SikuliRegionInterface(SingletonClass):
 
     def hover(self,location):
         self.region.hover(location)
+        
     ## /Interface
 
         
+    def getLastMatch(self):
+        return self.region.getLastMatch()
+
+    def getLastMatches(self):
+        return self.region.getLastMatches()
     
     def find_all(self,search_image, region = None):
         if(region == None):

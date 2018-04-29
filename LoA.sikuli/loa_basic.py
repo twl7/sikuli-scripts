@@ -22,20 +22,25 @@ def return_to_main_screen():
             if(sri.click_best_match(image,1)):
                 cont = True
                 
-
-def auto_battle():    
-    clicked = sri.click_best_match(png.battle_auto_fight,90)
+# returns -1 if no battle detected, 0 if loss, 1 if wins
+def auto_battle():
+    sri.hover(Location(0,0))
+    clicked = sri.click(png.battle_auto_fight,90)
     if(clicked == 0):
         return -1
-    sri.click_best_match(png.battle_pass_fight,10)
+    sri.click(png.battle_pass_fight,10)
+    
+    success = png.battle_success
+    if(sri.click(success,2)):
+        sri.waitVanish(success,2)
+        return 1
+
     fail = png.battle_fail_menu
-    if(sri.click_best_match(fail,2)):
+    if(sri.click(fail,2)):
         sri.waitVanish(fail,2)
         return 0
-    success = png.battle_success
-    if(sri.click_best_match(success,2)):
-        sri.waitVanish(success,2)
-        return 1    
+    
+    return -1
 
 
 activity_orders = {#png.activity_chest1_ready:[],
@@ -50,8 +55,8 @@ activity_orders = {#png.activity_chest1_ready:[],
 def complete_activity():
     def return_to_activity():
         return_to_main_screen()
-        sri.click(png.mainscreen_activity,5,last_match = True)
-        sri.wait(png.activity_send_energy_once,30)
+        sri.click(png.mainscreen_activity,20,last_match = True)
+        sri.wait(png.activity_send_energy_once,60)
         
     go_to = png.activity_go_to_button
 
@@ -64,14 +69,12 @@ def complete_activity():
         except:
             continue
         
-        if(sri.exists(go_to,2,search_space)):
-            sri.click(go_to,2,search_space,True)            
+        if(sri.click(go_to,10,search_space)):        
             for target in activity_orders[activity]:
                 
                 if(isinstance(target,type(callable))):
                     target()
                 else:
-                    sleep(3)
                     sri.click(target,10)
             return_to_activity()
     return_to_main_screen()
@@ -110,13 +113,13 @@ def complete_honor():
 
 def clear_dungeon():
     arr = [png.mainscreen_arena,png.arena_dungeon,png.arena_dungeon_sweep,png.buttons_return_button,png.arena_dungeon,png.arena_dungeon_continue]
-    s = sum([sri.click_best_match(image,5) for image in arr])
+    s = sum([sri.click(image,5) for image in arr])
     
     continue_fight = 1
     fight_button = Pattern(png.arena_dungeon_fight).similar(0.8)
     while(continue_fight == 1):
         sri.exists(fight_button,10)
-        while(sri.click_best_match(fight_button,1)):
+        while(sri.click(fight_button,1)):
             if(sri.exists(png.arena_dungeon_recharge,1)):
                 continue_fight = 0
                 break
@@ -128,7 +131,6 @@ def clear_dungeon():
  
 
 def claim_friends_energy():
-    sri.click_best_match("")
     return_to_main_screen()
 
 def reset_towers(towers_to_reset):
@@ -159,5 +161,6 @@ def clear_towers(towers_to_clear):
     
     for iteration in xrange(15): 
         pass
+        #TODO
         sri.click_best_match(png.ADVENTURE_SCROLL_LEFT_BUTTON)
     return_to_main_screen()
