@@ -5,6 +5,7 @@ Miscellaneous sikuli scripts to click through games and other desktop apps
 2. [Why is this?](#section2)
 3. [What's left to do?](#section3)
 4. [What could be done instead?](#section4)
+4. [How do I run this?](#section5)
 
 
 # <a name="section1">1. What is this</a>
@@ -33,6 +34,12 @@ ii. Machine learning:
 iii. Fiddler2 (or similar packet capturing routes):
     Ideally, this route is the best for server-connected applications.  Why burden your interaction with the cumbersome limitations of the client UI?  Capturing and spoofing packets reduces the approach to making "API" calls to the server
     I have explored this route but require some assistance in learning to do it.
-    
+
+# <a name="section5">5. How do I run this?</a>
+Saving the best for last.
+
+Because I haven't made a simple interface to run the automation, you'll have to download <a href="https://java.com/">Java</a> and <a href="http://sikulix.com/">Sikuli</a>
+Open the Sikuli IDE by double-clicking sikulix.jar in the folder that you saved sikuli in
+Using the Sikuli IDE, open the .Sikuli folder of choice and tweak the script to your preference
 
     
