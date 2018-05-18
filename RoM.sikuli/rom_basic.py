@@ -29,13 +29,17 @@ def auto_battle(wait_time = 10):
         sri.region.waitVanish(reshuffle,0.5)
     sri.click(png.BATTLE_AUTO_BUTTON,0.5)
 
-def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_time = 3600):
+def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_time = 3600,separate_trades = False):
     exchange = Pattern(png.fzone_exchange).similar(0.99)
-    trade_array = [Pattern(trade).similar(0.95) for trade in trade_array]
     totals = [0] * number_of_tabs
     cycles = 0
     while(cycles != num_trade_cycles):
         for i in xrange(number_of_tabs):
+            trades = trade_array
+            if(separate_trades):
+                trades = trade_array[i % len(trade_array)]
+            trades = [Pattern(trade).similar(0.95) for trade in trades]
+            
             if(num_trade_cycles != 1):
                 for p in [Pattern(png.menu_close_button).similar(.95),png.mainscreen_fz_icon]:
                     
@@ -44,7 +48,7 @@ def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_ti
                     sleep(0.6)
             regions = []
             to_click = True
-            for trade in trade_array:
+            for trade in trades:
                 if(sri.exists(trade)):
                     if(to_click):
                         sri.click(sri.getLastMatch())
@@ -74,19 +78,23 @@ def tab_bosses(time):
     reshuffle = Pattern(png.BATTLE_RESHUFFLE_PROMPT).similar(0.5).targetOffset(60,30)
 
     
+    #sri.onAppear(victory,lambda : sri.click(victory))
+    #sri.observe()
+    
     timing = current_time()
     while((current_time() - timing).total_seconds() < time):
-        sri.click(victory)
+        sri.click(victory,0.5)
         if(sri.click(b_r_b)):
             pass
         elif(sri.click(b_g_b,1)):
-            auto_battle(10)
+            auto_battle(5)
         else:
             auto_battle(0)
 
         sri.switch_tab_right()
+    
         
-
+#
 def run_bosses(number_of_tabs,number_of_fights):
     
     if(number_of_tabs <= 0):
@@ -136,7 +144,7 @@ def run_world_boss(number_of_tabs,number_of_fights):
     for iteration in xrange(number_of_fights):
                         
         sri.exists(b_g_b,5)
-        sri.click(b_g_b,last_match = True)
+        sri.click(b_g_b)
         
         for tab in xrange(number_of_tabs):
             auto_battle(10-8*tab)
@@ -150,7 +158,7 @@ def auto_towers(win_limit):
     victory = png.battle_victory
     c_b = png.tower_continue_button
     s_b = png.tower_start_button
-    free_attempt = Pattern(png.tower_free_attempt).similar(0.95)
+    free_attempt = Pattern(png.tower_free_attempt).similar(0.90)
     
     current_wins = 0
     
@@ -159,9 +167,9 @@ def auto_towers(win_limit):
         
         if(sri.exists(free_attempt)):
             sri.click(s_b)
-        else:
-            sri.click(c_b)
-        auto_battle(3)
+        sri.click(c_b)
+        
+        auto_battle(2)
         sri.switch_tab_right()
         sleep(1)
         

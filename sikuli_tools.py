@@ -109,7 +109,20 @@ class SikuliRegionInterface(SingletonClass):
 
     def hover(self,location):
         self.region.hover(location)
-        
+
+      ##observers
+
+    def onAppear(self,pattern,handler):
+        self.region.onAppear(pattern,handler)
+        return
+
+    def observe(self,seconds, background = True):
+        self.region.observe(seconds,background)
+
+    def stopObserver(self):
+        self.region.stopObserver()
+       ## /observers
+    
     ## /Interface
 
         
