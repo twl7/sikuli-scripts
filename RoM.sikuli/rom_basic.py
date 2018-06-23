@@ -6,7 +6,8 @@ if(not parent_directory in sys.path): sys.path.append(parent_directory)
 from org.sikuli.basics import Debug
 from org.sikuli.script import *
 from sikuli_tools import *
-from time import *
+
+import time
 import datetime
 
 
@@ -23,11 +24,24 @@ def return_to_main_screen():
 def auto_battle(wait_time = 10):
     
     reshuffle = Pattern(png.BATTLE_RESHUFFLE_PROMPT).similar(0.5).targetOffset(60,30)
+    auto_button = png.BATTLE_AUTO_BUTTON
+
+    sri.exists(reshuffle,max(0,wait_time))
+    start = time.time()
+    while((time.time() - start) < 0.5 and not sri.click(reshuffle)):
+        pass
+    sri.hover(hover_location)
+    start = time.time()
+    while((time.time() - start) < 0.5 and not sri.click(auto_button)):
+        pass
+        
+    """
     if(sri.exists(reshuffle,max(0,wait_time))):
         sri.click(reshuffle) 
         sri.hover(hover_location)
         sri.region.waitVanish(reshuffle,0.5)
     sri.click(png.BATTLE_AUTO_BUTTON,0.5)
+    """
 
 def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_time = 3600,separate_trades = False):
     exchange = Pattern(png.fzone_exchange).similar(0.99)
@@ -41,11 +55,11 @@ def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_ti
             trades = [Pattern(trade).similar(0.95) for trade in trades]
             
             if(num_trade_cycles != 1):
-                for p in [Pattern(png.menu_close_button).similar(.95),png.mainscreen_fz_icon]:
+                for p in [Pattern(png.menu_close_button).similar(.95),png.mainscreen_icon_forbidden_zone]:
                     
                     if(not sri.click(p)):
                         break
-                    sleep(0.6)
+                    time.sleep(0.6)
             regions = []
             to_click = True
             for trade in trades:
@@ -58,15 +72,15 @@ def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_ti
             for r in regions:
                 totals[i] += sri.click(exchange,1,r.below(100))
                 
-            sleep(0.5)
+            time.sleep(0.5)
             sri.switch_tab_right()
-            sleep(0.5)
+            time.sleep(0.5)
         for i in xrange(number_of_tabs):
             sri.switch_tab_left()
-            sleep(0.2)
+            time.sleep(0.2)
         Debug.log("Number of trades so far is {}".format(str(totals)))
         cycles += 1
-        sleep(wait_time)
+        time.sleep(wait_time)
         
         
 def tab_bosses(time):
@@ -83,7 +97,8 @@ def tab_bosses(time):
     
     timing = current_time()
     while((current_time() - timing).total_seconds() < time):
-        sri.click(victory,0.5)
+        if(sri.click(victory,1)):
+            time.sleep(1)
         if(sri.click(b_r_b)):
             pass
         elif(sri.click(b_g_b,1)):
@@ -103,15 +118,18 @@ def run_bosses(number_of_tabs,number_of_fights):
     hover_location = sri.region.find(png.CONTAINER_SERVER).getCenter().offset(0,-80)
     b_r_b = png.BOSS_READY_BUTTON
     b_g_b = png.BOSS_GO_BUTTON
+    victory = png.BATTLE_VICTORY
     
     boss_button = b_g_b if number_of_tabs == 1 else b_r_b
     
     current_time = lambda : datetime.datetime.now()
     for iteration in xrange(number_of_fights):
         for tab in xrange(number_of_tabs - 1):
+            sri.click(victory,1)
             sri.click_best_match(b_r_b,2)
             sri.switch_tab_left()
-    
+            
+        sri.click(victory,1)
         sri.click(b_g_b,10)
         
         for tab in xrange(number_of_tabs):
@@ -124,7 +142,7 @@ def run_bosses(number_of_tabs,number_of_fights):
         
         timing = current_time()
         
-        sri.exists(boss_button,1000)
+        sri.exists_array([victory,boss_button],1000)
         write_to_file("boss times.txt","a",(current_time()-timing).total_seconds())
 
 
@@ -139,7 +157,7 @@ def run_world_boss(number_of_tabs,number_of_fights):
     for tab in xrange(number_of_tabs - 1):
             sri.click_best_match(b_r_b)
             sri.switch_tab_left()
-            sleep(1)
+            time.sleep(1)
             
     for iteration in xrange(number_of_fights):
                         
@@ -171,7 +189,7 @@ def auto_towers(win_limit):
         
         auto_battle(2)
         sri.switch_tab_right()
-        sleep(1)
+        time.sleep(1)
         
 def complete_maps():
     pass

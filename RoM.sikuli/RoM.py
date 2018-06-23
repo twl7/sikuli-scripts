@@ -30,22 +30,21 @@ fzone_trades = pre_2K_trades #+ [png.FZONE_SILVER_TO_GOLD]
 def fz_boss():
     for i in xrange(100):
         run_bosses(2,14)
-        make_fzone_trades(3,[fzone_trades,gold_trades,gold_trades],1,1,separate_trades=True)  
+        make_fzone_trades(4,fzone_trades,1,1,separate_trades=False)  
 
-        
+def partial_boss():
+    run_bosses(1,30)
+    sri.switch_tab_left()
+    run_bosses(2,60)
+    sri.switch_tab_right()
+    run_bosses(1,400)
+
 #sleep(8000)
-
+#run_bosses(1,60)
 #tab_bosses(time=72000)
-"""
-run_bosses(1,14)
-sri.switch_tab_left()
-run_bosses(2,36)
-sri.switch_tab_right()
-run_bosses(1,400)
-"""
-#run_bosses(2,400)
+#partial_boss()
+#run_world_boss(2,60)
 
-#run_world_boss(2,50)
 fz_boss()
-#auto_towers(18)
-make_fzone_trades(3,[gold_trades,fzone_trades,gold_trades],-1,wait_time= 1000,separate_trades= True)  
+#auto_towers(60)
+#make_fzone_trades(4,fzone_trades,-1,wait_time= 1000,separate_trades= False)  

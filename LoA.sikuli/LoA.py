@@ -20,7 +20,7 @@ towers = range(8,1,-1)
 def routine():
     return_to_main_screen()
     complete_honor()
-    complete_events()
+    #complete_events()
     clear_invasions()
     clear_dungeon()
     complete_activity()

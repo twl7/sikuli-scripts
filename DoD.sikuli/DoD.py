@@ -7,3 +7,7 @@ from sikuli_tools import *
 ### SETTINGS
 Settings.MinSimilarity = 0.85
 ### /SETTINGS
+
+
+def routine():
+    pass

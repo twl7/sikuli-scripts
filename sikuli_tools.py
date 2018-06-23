@@ -1,5 +1,4 @@
 import io
-
 import os,sys
 current_directory = sys.path[0]
 
@@ -9,6 +8,7 @@ logging.basicConfig(filename=LOG_FILENAME, level=logging.DEBUG)
 
 from org.sikuli.basics import *
 from org.sikuli.script import *
+
 import time
 
 class SingletonClass(object):
@@ -63,6 +63,21 @@ class SikuliRegionInterface(SingletonClass):
         except:
             Debug.log("Failed to find pattern " + str(pattern))
         return False
+    
+    def exists_array(self,patterns,timeout = 0, region = None):
+        if(region == None):
+            region = self.region
+        try:
+            start = time.time()
+            while(int(time.time() - start) <= timeout):
+                for pattern in patterns:
+                    found = region.exists(pattern,0)
+                    if(found):
+                        return found
+
+        except:
+            Debug.log("Failed to find pattern " + str(pattern))
+        return False
         
     def click(self,pattern,timeout = 0,region = None, last_match = False):
         if(region == None):
@@ -98,7 +113,22 @@ class SikuliRegionInterface(SingletonClass):
             return True
         except:
             Debug.log("Pattern \"{}\" did not appear after {} seconds".format(str(pattern),str(timeout)))
+            
             return False
+
+    def wait_array(self,patterns,timeout = 0):
+
+        try:
+            start = time.time()
+            while(time.time() - start <= timeout):
+                for pattern in patterns:
+                    if(self.wait(patterns)):
+                        return True
+            
+        except:
+            Debug.log("Awaited patterns \"{}\" did not appear after {} seconds".format(str(pattern),str(timeout)))
+
+        return False
         
         
     def waitVanish(self,pattern,timeout = 0):
