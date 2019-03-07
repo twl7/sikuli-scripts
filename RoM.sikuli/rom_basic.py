@@ -13,7 +13,8 @@ import datetime
 
 sri = SRI()
 png = png_manifest(sys.path[0])
-hover_location = sri.find(png.CONTAINER_SERVER).getCenter().offset(0,-80)
+hover_location = sri.find(png.CONTAINER_ROM_TITLE).getCenter().offset(0,80)
+
 
 def return_to_main_screen():
     for button in []:
@@ -55,10 +56,9 @@ def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_ti
             trades = [Pattern(trade).similar(0.95) for trade in trades]
             
             if(num_trade_cycles != 1):
-                for p in [Pattern(png.menu_close_button).similar(.95),png.mainscreen_icon_forbidden_zone]:
+                for p in [Pattern(png.menu_close_button).similar(.80),png.mainscreen_icon_forbidden_zone]:
                     
-                    if(not sri.click(p)):
-                        break
+                    sri.click(p,1)
                     time.sleep(0.6)
             regions = []
             to_click = True
@@ -82,10 +82,11 @@ def make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -1, wait_ti
         cycles += 1
         time.sleep(wait_time)
         
+#TODO make the boss functions less redundant
         
-def tab_bosses(time):
+def tab_bosses(run_time):
+    global hover_location
     current_time = lambda : datetime.datetime.now()
-    hover_location = sri.find(png.CONTAINER_SERVER).getCenter().offset(0,-80)
     b_r_b = png.BOSS_READY_BUTTON
     b_g_b = png.BOSS_GO_BUTTON
     victory = png.BATTLE_VICTORY
@@ -96,13 +97,13 @@ def tab_bosses(time):
     #sri.observe()
     
     timing = current_time()
-    while((current_time() - timing).total_seconds() < time):
+    while((current_time() - timing).total_seconds() < run_time):
         if(sri.click(victory,1)):
             time.sleep(1)
         if(sri.click(b_r_b)):
             pass
-        elif(sri.click(b_g_b,1)):
-            auto_battle(5)
+        elif(sri.click(b_g_b)):
+            pass
         else:
             auto_battle(0)
 
@@ -111,11 +112,10 @@ def tab_bosses(time):
         
 #
 def run_bosses(number_of_tabs,number_of_fights):
-    
+    global hover_location
     if(number_of_tabs <= 0):
         return
     
-    hover_location = sri.region.find(png.CONTAINER_SERVER).getCenter().offset(0,-80)
     b_r_b = png.BOSS_READY_BUTTON
     b_g_b = png.BOSS_GO_BUTTON
     victory = png.BATTLE_VICTORY
@@ -147,7 +147,7 @@ def run_bosses(number_of_tabs,number_of_fights):
 
 
 def run_world_boss(number_of_tabs,number_of_fights):
-    hover_location = sri.region.find(png.CONTAINER_SERVER).getCenter().offset(0,-80)
+    global hover_location
     if(number_of_tabs <= 0):
         return
     b_r_b = png.BOSS_READY_BUTTON

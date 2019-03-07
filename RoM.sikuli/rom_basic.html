@@ -67,7 +67,7 @@
    </head>
 <body>
 <div class="info">
-<h2>RoM.sikuli</h2> <a href="RoM.zip">(Download this script)</a>
+<h2>boss_a.sikuli</h2> <a href="boss_a.zip">(Download this script)</a>
 </div>
 <pre class="sikuli-code">
 <span class="kw">import</span> os,sys
@@ -78,82 +78,148 @@ parent_directory = os.path.dirname(sys.path[<span class="dig">0</span>])
 <span class="kw">from</span> org.sikuli.basics <span class="kw">import</span> Debug
 <span class="kw">from</span> org.sikuli.script <span class="kw">import</span> *
 <span class="kw">from</span> sikuli_tools <span class="kw">import</span> *
-<span class="kw">from</span> time <span class="kw">import</span> *
+
+<span class="kw">import</span> time
 <span class="kw">import</span> datetime
 
 
 sri = SRI()
 png = png_manifest(sys.path[<span class="dig">0</span>])
+hover_location = sri.<span class="skw">find</span>(png.CONTAINER_ROM_TITLE).getCenter().offset(<span class="dig">0</span>,<span class="dig">80</span>)
 
-<span class="kw">def</span> make_fzone_trades(number_of_tabs,trade_array, num_trades = -<span class="dig">1</span>, wait_time = <span class="dig">3600</span>):
+
+<span class="kw">def</span> return_to_main_screen():
+    <span class="kw">for</span> button <span class="kw">in</span> []:
+        sri.click_best_match(button)
+        <span class="kw">pass</span>
+    <span class="kw">pass</span>
+
+<span class="kw">def</span> auto_battle(wait_time = <span class="dig">10</span>):
+
+    reshuffle = Pattern(png.BATTLE_RESHUFFLE_PROMPT).similar(<span class="dig">0.5</span>).targetOffset(<span class="dig">60</span>,<span class="dig">30</span>)
+    auto_button = png.BATTLE_AUTO_BUTTON
+
+    sri.exists(reshuffle,max(<span class="dig">0</span>,wait_time))
+    start = time.time()
+    <span class="kw">while</span>((time.time() - start) &lt; <span class="dig">0.5</span> <span class="kw">and</span> <span class="kw">not</span> sri.<span class="skw">click</span>(reshuffle)):
+        <span class="kw">pass</span>
+    sri.hover(hover_location)
+    start = time.time()
+    <span class="kw">while</span>((time.time() - start) &lt; <span class="dig">0.5</span> <span class="kw">and</span> <span class="kw">not</span> sri.<span class="skw">click</span>(auto_button)):
+        <span class="kw">pass</span>
+
+    <span class="str">"""
+    if(sri.exists(reshuffle,max(0,wait_time))):
+        sri.click(reshuffle) 
+        sri.hover(hover_location)
+        sri.region.waitVanish(reshuffle,0.5)
+    sri.click(png.BATTLE_AUTO_BUTTON,0.5)
+    """</span>
+
+<span class="kw">def</span> make_fzone_trades(number_of_tabs,trade_array, num_trade_cycles = -<span class="dig">1</span>, wait_time = <span class="dig">3600</span>,separate_trades = False):
     exchange = Pattern(png.fzone_exchange).similar(<span class="dig">0.99</span>)
-    trade_array = [Pattern(trade).similar(<span class="dig">0.9</span>) <span class="kw">for</span> trade <span class="kw">in</span> trade_array]
     totals = [<span class="dig">0</span>] * number_of_tabs
-    count = <span class="dig">0</span>
-    <span class="kw">while</span>(count != num_trades):
+    cycles = <span class="dig">0</span>
+    <span class="kw">while</span>(cycles != num_trade_cycles):
         <span class="kw">for</span> i <span class="kw">in</span> xrange(number_of_tabs):
-            <span class="kw">if</span>(num_trades != <span class="dig">1</span>):
-                <span class="kw">for</span> p <span class="kw">in</span> [Pattern(png.menu_close_button).similar(<span class="dig">.95</span>),png.mainscreen_fz_icon]:
+            trades = trade_array
+            <span class="kw">if</span>(separate_trades):
+                trades = trade_array[i % len(trade_array)]
+            trades = [Pattern(trade).similar(<span class="dig">0.95</span>) <span class="kw">for</span> trade <span class="kw">in</span> trades]
 
-                    <span class="kw">if</span>(<span class="kw">not</span> sri.click_best_match(p)):
-                        <span class="kw">break</span>
-                    <span class="skw">sleep</span>(<span class="dig">0.6</span>)
-            regions = sum([[m <span class="kw">for</span> m <span class="kw">in</span> sri.get_all_matches(trade)] <span class="kw">for</span> trade <span class="kw">in</span> trade_array <span class="kw">if</span> sri.exists(trade)],[])
+            <span class="kw">if</span>(num_trade_cycles != <span class="dig">1</span>):
+                <span class="kw">for</span> p <span class="kw">in</span> [Pattern(png.menu_close_button).similar(<span class="dig">.80</span>),png.mainscreen_icon_forbidden_zone]:
+
+                    sri.<span class="skw">click</span>(p,<span class="dig">1</span>)
+                    time.<span class="skw">sleep</span>(<span class="dig">0.6</span>)
+            regions = []
+            to_click = True
+            <span class="kw">for</span> trade <span class="kw">in</span> trades:
+                <span class="kw">if</span>(sri.exists(trade)):
+                    <span class="kw">if</span>(to_click):
+                        sri.<span class="skw">click</span>(sri.getLastMatch())
+                        to_click = False
+                    Debug.log(str(trade))
+                    regions += sri.find_all(trade)
             <span class="kw">for</span> r <span class="kw">in</span> regions:
-                totals[i] += sri.click_best_match(exchange,<span class="dig">1</span>,r.below(<span class="dig">100</span>))
+                totals[i] += sri.<span class="skw">click</span>(exchange,<span class="dig">1</span>,r.below(<span class="dig">100</span>))
 
-            <span class="skw">sleep</span>(<span class="dig">0.5</span>)
+            time.<span class="skw">sleep</span>(<span class="dig">0.5</span>)
             sri.switch_tab_right()
-            <span class="skw">sleep</span>(<span class="dig">0.5</span>)
+            time.<span class="skw">sleep</span>(<span class="dig">0.5</span>)
         <span class="kw">for</span> i <span class="kw">in</span> xrange(number_of_tabs):
             sri.switch_tab_left()
-            <span class="skw">sleep</span>(<span class="dig">0.2</span>)
+            time.<span class="skw">sleep</span>(<span class="dig">0.2</span>)
         Debug.log(<span class="str">"Number of trades so far is {}"</span>.format(str(totals)))
-        count += <span class="dig">1</span>
-        <span class="skw">sleep</span>(wait_time)
+        cycles += <span class="dig">1</span>
+        time.<span class="skw">sleep</span>(wait_time)
+
+<span class="cmt">#TODO make the boss functions less redundant</span>
+
+<span class="kw">def</span> tab_bosses(run_time):
+    <span class="kw">global</span> hover_location
+    current_time = <span class="kw">lambda</span> : datetime.datetime.now()
+    b_r_b = png.BOSS_READY_BUTTON
+    b_g_b = png.BOSS_GO_BUTTON
+    victory = png.BATTLE_VICTORY
+    reshuffle = Pattern(png.BATTLE_RESHUFFLE_PROMPT).similar(<span class="dig">0.5</span>).targetOffset(<span class="dig">60</span>,<span class="dig">30</span>)
 
 
+    <span class="cmt">#sri.onAppear(victory,lambda : sri.click(victory))</span>
+    <span class="cmt">#sri.observe()</span>
+
+    timing = current_time()
+    <span class="kw">while</span>((current_time() - timing).total_seconds() &lt; run_time):
+        <span class="kw">if</span>(sri.<span class="skw">click</span>(victory,<span class="dig">1</span>)):
+            time.<span class="skw">sleep</span>(<span class="dig">1</span>)
+        <span class="kw">if</span>(sri.<span class="skw">click</span>(b_r_b)):
+            <span class="kw">pass</span>
+        <span class="kw">elif</span>(sri.<span class="skw">click</span>(b_g_b)):
+            <span class="kw">pass</span>
+        <span class="kw">else</span>:
+            auto_battle(<span class="dig">0</span>)
+
+        sri.switch_tab_right()
 
 
+<span class="cmt">#</span>
 <span class="kw">def</span> run_bosses(number_of_tabs,number_of_fights):
-
+    <span class="kw">global</span> hover_location
     <span class="kw">if</span>(number_of_tabs &lt;= <span class="dig">0</span>):
         <span class="kw">return</span>
 
-    hover_location = sri.region.<span class="skw">find</span>(png.CONTAINER_SERVER).getCenter().offset(<span class="dig">0</span>,-<span class="dig">80</span>)
     b_r_b = png.BOSS_READY_BUTTON
     b_g_b = png.BOSS_GO_BUTTON
-    reshuffle = Pattern(png.BATTLE_RESHUFFLE_PROMPT).similar(<span class="dig">0.5</span>).targetOffset(<span class="dig">60</span>,<span class="dig">30</span>)
+    victory = png.BATTLE_VICTORY
+
     boss_button = b_g_b <span class="kw">if</span> number_of_tabs == <span class="dig">1</span> <span class="kw">else</span> b_r_b
 
     current_time = <span class="kw">lambda</span> : datetime.datetime.now()
     <span class="kw">for</span> iteration <span class="kw">in</span> xrange(number_of_fights):
         <span class="kw">for</span> tab <span class="kw">in</span> xrange(number_of_tabs - <span class="dig">1</span>):
+            sri.<span class="skw">click</span>(victory,<span class="dig">1</span>)
             sri.click_best_match(b_r_b,<span class="dig">2</span>)
             sri.switch_tab_left()
 
-        sri.exists(b_g_b,<span class="dig">5</span>)
-        sri.click_best_match(b_g_b)
+        sri.<span class="skw">click</span>(victory,<span class="dig">1</span>)
+        sri.<span class="skw">click</span>(b_g_b,<span class="dig">10</span>)
 
         <span class="kw">for</span> tab <span class="kw">in</span> xrange(number_of_tabs):
-            <span class="kw">if</span>(sri.region.exists(reshuffle,<span class="dig">10</span>-<span class="dig">8</span>*tab)):
-                sri.click_best_match(reshuffle)
-                sri.region.hover(hover_location)
-                sri.region.waitVanish(reshuffle,<span class="dig">1</span>)
-            sri.click_best_match(png.BATTLE_AUTO_BUTTON,<span class="dig">2</span>)
+            auto_battle(<span class="dig">10</span>-<span class="dig">8</span>*tab)
 
             sri.switch_tab_right()
+
         sri.switch_tab_left()
-        sri.region.hover(hover_location)
+        sri.hover(hover_location)
 
         timing = current_time()
 
-        sri.exists(boss_button,<span class="dig">1000</span>)
+        sri.exists_array([victory,boss_button],<span class="dig">1000</span>)
         write_to_file(<span class="str">"boss times.txt"</span>,<span class="str">"a"</span>,(current_time()-timing).total_seconds())
 
 
 <span class="kw">def</span> run_world_boss(number_of_tabs,number_of_fights):
-    hover_location = sri.region.<span class="skw">find</span>(png.CONTAINER_SERVER).getCenter().offset(<span class="dig">0</span>,-<span class="dig">80</span>)
+    <span class="kw">global</span> hover_location
     <span class="kw">if</span>(number_of_tabs &lt;= <span class="dig">0</span>):
         <span class="kw">return</span>
     b_r_b = png.BOSS_READY_BUTTON
@@ -163,32 +229,40 @@ png = png_manifest(sys.path[<span class="dig">0</span>])
     <span class="kw">for</span> tab <span class="kw">in</span> xrange(number_of_tabs - <span class="dig">1</span>):
             sri.click_best_match(b_r_b)
             sri.switch_tab_left()
-            <span class="skw">sleep</span>(<span class="dig">1</span>)
+            time.<span class="skw">sleep</span>(<span class="dig">1</span>)
 
     <span class="kw">for</span> iteration <span class="kw">in</span> xrange(number_of_fights):
 
         sri.exists(b_g_b,<span class="dig">5</span>)
-        sri.click_best_match(b_g_b)
+        sri.<span class="skw">click</span>(b_g_b)
 
         <span class="kw">for</span> tab <span class="kw">in</span> xrange(number_of_tabs):
-            reshuffle = Pattern(png.BATTLE_RESHUFFLE_PROMPT).similar(<span class="dig">0.5</span>).targetOffset(<span class="dig">60</span>,<span class="dig">30</span>)
-
-            <span class="kw">if</span>(sri.exists(reshuffle,max(<span class="dig">0</span>,<span class="dig">10</span>-<span class="dig">8</span>*tab))):
-                sri.click_best_match(reshuffle)
-                sri.region.hover(hover_location)
-                sri.region.waitVanish(reshuffle,<span class="dig">1</span>)
-            sri.click_best_match(png.BATTLE_AUTO_BUTTON,<span class="dig">2</span>)
+            auto_battle(<span class="dig">10</span>-<span class="dig">8</span>*tab)
 
             sri.switch_tab_right()
         sri.switch_browser_tabs(-<span class="dig">1</span>*number_of_tabs)
-        sri.region.hover(hover_location)
+        sri.hover(hover_location)
         sri.exists(boss_button,<span class="dig">1000</span>)
 
-<span class="kw">def</span> return_to_main_screen():
-    <span class="kw">for</span> button <span class="kw">in</span> []:
-        sri.click_best_match(button)
-        <span class="kw">pass</span>
-    <span class="kw">pass</span>
+<span class="kw">def</span> auto_towers(win_limit):
+    victory = png.battle_victory
+    c_b = png.tower_continue_button
+    s_b = png.tower_start_button
+    free_attempt = Pattern(png.tower_free_attempt).similar(<span class="dig">0.90</span>)
+
+    current_wins = <span class="dig">0</span>
+
+    <span class="kw">while</span>(current_wins &lt; win_limit):
+        current_wins += sri.<span class="skw">click</span>(victory)
+
+        <span class="kw">if</span>(sri.exists(free_attempt)):
+            sri.<span class="skw">click</span>(s_b)
+        sri.<span class="skw">click</span>(c_b)
+
+        auto_battle(<span class="dig">2</span>)
+        sri.switch_tab_right()
+        time.<span class="skw">sleep</span>(<span class="dig">1</span>)
+
 <span class="kw">def</span> complete_maps():
     <span class="kw">pass</span>
 

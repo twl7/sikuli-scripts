@@ -31,8 +31,8 @@ def auto_battle():
     sri.click(png.battle_pass_fight,10)
     
     success = png.battle_success
-    if(sri.click(success,2)):
-        sri.waitVanish(success,2)
+    if(sri.click(success,4)):
+        sri.waitVanish(success,4)
         return 1
 
     fail = png.battle_fail_menu
@@ -129,6 +129,19 @@ def clear_dungeon():
 
     return_to_main_screen()
  
+def use_temple(number_of_meditates):
+    n = number_of_meditates
+    return_to_main_screen()
+    sri.click(png.MAINSCREEN_TEMPLE)
+    
+    med,process = png.temple_meditate, png.temple_quick_process
+    while(n > 0):
+        sri.click(med)
+        n -= 1
+        if(n% 10 == 0):
+            sri.click(process,1)
+            sri.click(png.buttons_close_button_small,3)
+    
 
 def claim_friends_energy():
     return_to_main_screen()

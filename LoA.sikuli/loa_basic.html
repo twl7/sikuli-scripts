@@ -94,20 +94,25 @@ png = png_manifest(sys.path[<span class="dig">0</span>])
             <span class="kw">if</span>(sri.click_best_match(image,<span class="dig">1</span>)):
                 cont = True
 
-
+<span class="cmt"># returns -1 if no battle detected, 0 if loss, 1 if wins</span>
 <span class="kw">def</span> auto_battle():
-    clicked = sri.click_best_match(png.battle_auto_fight,<span class="dig">90</span>)
+    sri.hover(Location(<span class="dig">0</span>,<span class="dig">0</span>))
+    clicked = sri.<span class="skw">click</span>(png.battle_auto_fight,<span class="dig">90</span>)
     <span class="kw">if</span>(clicked == <span class="dig">0</span>):
         <span class="kw">return</span> -<span class="dig">1</span>
-    sri.click_best_match(png.battle_pass_fight,<span class="dig">10</span>)
+    sri.<span class="skw">click</span>(png.battle_pass_fight,<span class="dig">10</span>)
+
+    success = png.battle_success
+    <span class="kw">if</span>(sri.<span class="skw">click</span>(success,<span class="dig">4</span>)):
+        sri.waitVanish(success,<span class="dig">4</span>)
+        <span class="kw">return</span> <span class="dig">1</span>
+
     fail = png.battle_fail_menu
-    <span class="kw">if</span>(sri.click_best_match(fail,<span class="dig">2</span>)):
+    <span class="kw">if</span>(sri.<span class="skw">click</span>(fail,<span class="dig">2</span>)):
         sri.waitVanish(fail,<span class="dig">2</span>)
         <span class="kw">return</span> <span class="dig">0</span>
-    success = png.battle_success
-    <span class="kw">if</span>(sri.click_best_match(success,<span class="dig">2</span>)):
-        sri.waitVanish(success,<span class="dig">2</span>)
-        <span class="kw">return</span> <span class="dig">1</span>
+
+    <span class="kw">return</span> -<span class="dig">1</span>
 
 
 activity_orders = {<span class="cmt">#png.activity_chest1_ready:[],</span>
@@ -122,8 +127,8 @@ activity_orders = {<span class="cmt">#png.activity_chest1_ready:[],</span>
 <span class="kw">def</span> complete_activity():
     <span class="kw">def</span> return_to_activity():
         return_to_main_screen()
-        sri.click_best_match(png.mainscreen_activity,<span class="dig">5</span>)
-        sri.<span class="skw">wait</span>(png.activity_send_energy_once,<span class="dig">30</span>)
+        sri.<span class="skw">click</span>(png.mainscreen_activity,<span class="dig">20</span>,last_match = True)
+        sri.<span class="skw">wait</span>(png.activity_send_energy_once,<span class="dig">60</span>)
 
     go_to = png.activity_go_to_button
 
@@ -136,15 +141,13 @@ activity_orders = {<span class="cmt">#png.activity_chest1_ready:[],</span>
         <span class="kw">except</span>:
             <span class="kw">continue</span>
 
-        <span class="kw">if</span>(search_space.exists(go_to)):
-            search_space.<span class="skw">click</span>(go_to)
+        <span class="kw">if</span>(sri.<span class="skw">click</span>(go_to,<span class="dig">10</span>,search_space)):
             <span class="kw">for</span> target <span class="kw">in</span> activity_orders[activity]:
 
                 <span class="kw">if</span>(isinstance(target,<span class="skw">type</span>(callable))):
                     target()
                 <span class="kw">else</span>:
-                    <span class="skw">sleep</span>(<span class="dig">3</span>)
-                    sri.click_best_match(target,<span class="dig">10</span>)
+                    sri.<span class="skw">click</span>(target,<span class="dig">10</span>)
             return_to_activity()
     return_to_main_screen()
 
@@ -153,7 +156,7 @@ activity_orders = {<span class="cmt">#png.activity_chest1_ready:[],</span>
     return_to_main_screen()
     inv_s = png.ADVENTURE_INVASION_SMALL
     inv = png.ADVENTURE_INVASION_LARGE
-    sri.click_best_match(png.MAINSCREEN_ADVENTURE)
+    sri.<span class="skw">click</span>(png.MAINSCREEN_ADVENTURE,<span class="dig">10</span>,last_match = True)
     sri.<span class="skw">wait</span>(png.ADVENTURE_SCROLL_LEFT_BUTTON,<span class="dig">30</span>)
 
     <span class="kw">for</span> iteration <span class="kw">in</span> xrange(<span class="dig">15</span>): <span class="cmt">#number of stages minus 5</span>
@@ -162,7 +165,7 @@ activity_orders = {<span class="cmt">#png.activity_chest1_ready:[],</span>
             <span class="kw">if</span>(sri.exists(inv,<span class="dig">1</span>)):
                 <span class="kw">if</span>(sri.click_best_match(inv)):
                     auto_battle()
-        sri.click_best_match(png.ADVENTURE_SCROLL_LEFT_BUTTON)
+        sri.<span class="skw">click</span>(png.ADVENTURE_SCROLL_LEFT_BUTTON,last_match = True)
     return_to_main_screen()
 
 <span class="kw">def</span> complete_events():
@@ -175,20 +178,20 @@ activity_orders = {<span class="cmt">#png.activity_chest1_ready:[],</span>
 
 <span class="kw">def</span> complete_honor():
     return_to_main_screen()
-    sri.click_best_match(png.mainscreen_honor,<span class="dig">10</span>)
+    sri.<span class="skw">click</span>(png.mainscreen_honor,<span class="dig">10</span>,last_match = True)
     <span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">7</span>):
-        sri.click_best_match(png.honor_worship,<span class="dig">5</span>)
+        sri.<span class="skw">click</span>(png.honor_worship,<span class="dig">5</span>)
     return_to_main_screen()
 
 <span class="kw">def</span> clear_dungeon():
     arr = [png.mainscreen_arena,png.arena_dungeon,png.arena_dungeon_sweep,png.buttons_return_button,png.arena_dungeon,png.arena_dungeon_continue]
-    s = sum([sri.click_best_match(image,<span class="dig">5</span>) <span class="kw">for</span> image <span class="kw">in</span> arr])
+    s = sum([sri.<span class="skw">click</span>(image,<span class="dig">5</span>) <span class="kw">for</span> image <span class="kw">in</span> arr])
 
     continue_fight = <span class="dig">1</span>
     fight_button = Pattern(png.arena_dungeon_fight).similar(<span class="dig">0.8</span>)
     <span class="kw">while</span>(continue_fight == <span class="dig">1</span>):
         sri.exists(fight_button,<span class="dig">10</span>)
-        <span class="kw">while</span>(sri.click_best_match(fight_button,<span class="dig">1</span>)):
+        <span class="kw">while</span>(sri.<span class="skw">click</span>(fight_button,<span class="dig">1</span>)):
             <span class="kw">if</span>(sri.exists(png.arena_dungeon_recharge,<span class="dig">1</span>)):
                 continue_fight = <span class="dig">0</span>
                 <span class="kw">break</span>
@@ -198,26 +201,38 @@ activity_orders = {<span class="cmt">#png.activity_chest1_ready:[],</span>
 
     return_to_main_screen()
 
+<span class="kw">def</span> use_temple(number_of_meditates):
+    n = number_of_meditates
+    return_to_main_screen()
+    sri.<span class="skw">click</span>(png.MAINSCREEN_TEMPLE)
+
+    med,process = png.temple_meditate, png.temple_quick_process
+    <span class="kw">while</span>(n &gt; <span class="dig">0</span>):
+        sri.<span class="skw">click</span>(med)
+        n -= <span class="dig">1</span>
+        <span class="kw">if</span>(n% <span class="dig">10</span> == <span class="dig">0</span>):
+            sri.<span class="skw">click</span>(process,<span class="dig">1</span>)
+            sri.<span class="skw">click</span>(png.buttons_close_button_small,<span class="dig">3</span>)
+
 
 <span class="kw">def</span> claim_friends_energy():
-    sri.click_best_match(<span class="str">"d"</span>)
     return_to_main_screen()
 
 <span class="kw">def</span> reset_towers(towers_to_reset):
     return_to_main_screen()
-    sri.click_best_match(png.MAINSCREEN_ADVENTURE)
+    sri.<span class="skw">click</span>(png.MAINSCREEN_ADVENTURE,last_match = True)
     sri.<span class="skw">wait</span>(png.ADVENTURE_SCROLL_LEFT_BUTTON,<span class="dig">30</span>)
 
     <span class="kw">for</span> i <span class="kw">in</span> range(<span class="dig">8</span>,<span class="dig">2</span>,-<span class="dig">1</span>):
         to_clear = Pattern(getattr(png, <span class="str">"adventure_map"</span> + str(i))).similar(<span class="dig">0.95</span>)
 
         <span class="kw">while</span>(<span class="kw">not</span> sri.exists(to_clear,<span class="dig">1</span>)):
-            sri.click_best_match(png.ADVENTURE_SCROLL_LEFT_BUTTON)
-        <span class="kw">for</span> <span class="skw">click</span> <span class="kw">in</span> [to_clear, png.adventure_tower_icon,
+            sri.<span class="skw">click</span>(png.ADVENTURE_SCROLL_LEFT_BUTTON,last_match=True)
+        <span class="kw">for</span> target <span class="kw">in</span> [to_clear, png.adventure_tower_icon,
                       png.tower_free_reset, png.tower_confirm_button,
                       png.tower_reset,png.buttons_close_button_small,
                       png.tower_return_button]:
-            sri.click_best_match(<span class="skw">click</span>,<span class="dig">3</span>)
+            sri.<span class="skw">click</span>(target,<span class="dig">3</span>,last_match=True)
 
     return_to_main_screen()
 
@@ -229,12 +244,9 @@ activity_orders = {<span class="cmt">#png.activity_chest1_ready:[],</span>
     sri.click_best_match(png.MAINSCREEN_ADVENTURE)
     sri.<span class="skw">wait</span>(png.ADVENTURE_SCROLL_LEFT_BUTTON,<span class="dig">30</span>)
 
-    <span class="kw">for</span> iteration <span class="kw">in</span> xrange(<span class="dig">15</span>): <span class="cmt">#number of stages minus 5</span>
-        <span class="kw">while</span>(sri.exists(inv_s,<span class="dig">1</span>)):
-            sri.click_best_match(inv_s)
-            <span class="kw">if</span>(sri.exists(inv,<span class="dig">1</span>)):
-                <span class="kw">if</span>(sri.click_best_match(inv)):
-                    auto_battle()
+    <span class="kw">for</span> iteration <span class="kw">in</span> xrange(<span class="dig">15</span>):
+        <span class="kw">pass</span>
+        <span class="cmt">#TODO</span>
         sri.click_best_match(png.ADVENTURE_SCROLL_LEFT_BUTTON)
     return_to_main_screen()
 </pre>

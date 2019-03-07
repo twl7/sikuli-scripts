@@ -1,0 +1,181 @@
+
+<html>
+   <head>
+      <style type="text/css">
+         .sikuli-code {
+            font-size: 20px;
+            font-family: "Osaka-mono", Monospace;
+            line-height: 1.5em;
+            display:table-cell;
+            white-space: pre-wrap;       /* css-3 */
+            white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+            width: 99%;   /* remove horizontal scroll-bar when viewing in IE7 */
+         }
+         .sikuli-code img {
+            vertical-align: middle;
+            margin: 2px;
+            border: 1px solid #ccc;
+            padding: 2px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-box-shadow: 1px 1px 1px gray;
+            -webkit-box-shadow: 1px 1px 2px gray;
+         }
+         .kw {
+            color: blue;
+         }
+         .skw {
+            color: rgb(63, 127, 127);
+         }
+
+         .str {
+            color: rgb(128, 0, 0);
+         }
+
+         .dig {
+            color: rgb(128, 64, 0);
+         }
+
+         .cmt {
+            color: rgb(200, 0, 200);
+         }
+
+         h2 {
+            display: inline;
+            font-weight: normal;
+         }
+
+         .info {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            display: none;
+         }
+
+         a {
+            color: #9D2900;
+         }
+
+         body {
+            font-family: "Trebuchet MS", Arial, Sans-Serif;
+         }
+
+      </style>
+   </head>
+<body>
+<div class="info">
+<h2>DoD.sikuli</h2> <a href="DoD.zip">(Download this script)</a>
+</div>
+<pre class="sikuli-code">
+<span class="kw">import</span> os,sys
+parent_directory = os.path.dirname(sys.path[<span class="dig">0</span>])
+
+<span class="kw">if</span>(<span class="kw">not</span> parent_directory <span class="kw">in</span> sys.path): sys.path.append(parent_directory)
+
+<span class="kw">from</span> org.sikuli.basics <span class="kw">import</span> Debug
+<span class="kw">from</span> org.sikuli.script <span class="kw">import</span> *
+<span class="kw">from</span> sikuli_tools <span class="kw">import</span> *
+
+<span class="kw">import</span> time
+<span class="kw">import</span> datetime
+
+
+sri = SRI()
+png = png_manifest(sys.path[<span class="dig">0</span>])
+
+
+<span class="cmt">### Guild</span>
+<span class="kw">def</span> summon_guild_raids():
+    d_t = <span class="dig">5</span>
+    <span class="kw">for</span> pic <span class="kw">in</span> [png.mainscreen_tab_guild, png.guild_war_room]:
+        sri.<span class="skw">click</span>(pic,<span class="dig">5</span>)
+    scroll_down = Pattern(png.guild_war_room_scroll_bottom).similar(<span class="dig">0.99</span>)
+    summon = Pattern(png.guild_war_room_summon).similar(<span class="dig">0.90</span>)
+    hov = sri.<span class="skw">find</span>(png.mainscreen_tab_guild_selected,d_t)
+    <span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">50</span>):
+        sri.click_all(summon)
+        sri.click_all(scroll_down)
+        time.<span class="skw">sleep</span>(<span class="dig">0.5</span>)
+        sri.hover(hov)
+    <span class="kw">for</span> pic <span class="kw">in</span> [png.guild_war_room_join_all,png.popup_choice_yes]:
+        sri.<span class="skw">click</span>(pic, d_t)
+    sri.<span class="skw">click</span>(png.mainscreen_tab_home)
+
+<span class="kw">def</span> collect_guild_campaigns():
+    default_time = d_t = <span class="dig">10</span>
+    completed = Pattern(png.guild_campaign_menu_tab_completed).similar(<span class="dig">0.98</span>)
+    gtabselect = png.mainscreen_tab_guild_selected
+
+    <span class="kw">for</span> pic <span class="kw">in</span> [png.mainscreen_tab_guild, png.guild_campaign, completed]:
+        sri.<span class="skw">click</span>(pic, timeout = d_t )
+
+
+    <span class="kw">while</span>(sri.exists(png.guild_campaign_menu_join,d_t)):
+
+        <span class="cmt">##collect</span>
+        <span class="cmt">##count = 0</span>
+        <span class="cmt">##for jo in sri.find_all(png.guild_campaign_menu_join):</span>
+        <span class="cmt">##  count += 1</span>
+        time.<span class="skw">sleep</span>(<span class="dig">1</span>)
+        sri.click_top(png.guild_campaign_menu_join)
+        sri.<span class="skw">click</span>(png.guild_campaign_map_close_result,default_time)
+
+        <span class="kw">while</span>(sri.exists(png.guild_campaign_map_node_collect, d_t)):
+            <span class="kw">for</span> pic <span class="kw">in</span> [png.guild_campaign_map_node_collect, \
+                        png.guild_campaign_map_node_loot] + [gtabselect]*<span class="dig">4</span>:
+                sri.<span class="skw">click</span>(pic, d_t)
+        <span class="kw">for</span> pic <span class="kw">in</span> [png.guild_campaign_map_close, png.guild_campaign, completed]:
+            sri.<span class="skw">click</span>(pic,d_t)
+        time.<span class="skw">sleep</span>(<span class="dig">1</span>)
+
+        <span class="cmt">#loot</span>
+        <span class="cmt">#for i in xrange(count):</span>
+        <span class="kw">for</span> pic <span class="kw">in</span> [png.guild_campaign_menu_loot] + [gtabselect]*<span class="dig">4</span>:
+            sri.<span class="skw">click</span>(pic,d_t)
+        <span class="cmt">#end while menu join</span>
+    sri.<span class="skw">click</span>(png.mainscreen_tab_home)
+    <span class="kw">return</span> True
+
+
+<span class="cmt">###</span>
+
+<span class="kw">def</span> load_raid_information():
+    <span class="kw">pass</span>
+<span class="str">"""
+called within raid attack screen
+"""</span>
+<span class="kw">def</span> attack_and_exit_raid(share = True):
+    <span class="kw">pass</span>
+
+<span class="cmt">#call anywhere</span>
+<span class="kw">def</span> summon_and_hit_raids(num_to_summon, share):
+    d_t = <span class="dig">10</span>
+    <span class="kw">for</span> pic <span class="kw">in</span> [png.mainscreen_tab_raid, png.raid_tab_summon, \
+                png.raid_menu_available_summon]:
+        sri.<span class="skw">click</span>(pic,d_t)
+    <span class="kw">for</span> i <span class="kw">in</span> num_to_summon:
+        <span class="kw">pass</span>
+
+<span class="kw">def</span> join_raid():
+    d_t = <span class="dig">5</span>
+    sri.<span class="skw">click</span>(png.raid_menu_join, timeout = d_t)
+    <span class="kw">if</span>(sri.exists(png.popup_ok_confirm, timeout = <span class="dig">1</span>)):
+        <span class="kw">return</span> False
+    sri.<span class="skw">click</span>(png.raid_menu_engage, timeout = d_t)
+    <span class="kw">if</span>(sri.exists(png.popup_ok_confirm, timeout = <span class="dig">1</span>)):
+        <span class="kw">return</span> False
+    <span class="kw">return</span> True
+
+<span class="kw">def</span> join_and_hit_raid(damage_index = <span class="dig">1</span>):
+    join_raid()
+
+    <span class="kw">pass</span>
+
+<span class="kw">def</span> hit_raid_for_tier(tier = <span class="dig">1</span>):
+    <span class="kw">pass</span>
+</pre>
+</body>
+</html>

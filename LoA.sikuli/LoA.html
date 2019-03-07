@@ -77,7 +77,7 @@ reload(sikuli_tools)
 <span class="kw">from</span> sikuli_tools <span class="kw">import</span> *
 
 <span class="cmt">### SETTINGS</span>
-Settings.MinSimilarity = <span class="dig">0.75</span>
+Settings.MinSimilarity = <span class="dig">0.78</span>
 Settings.MoveMouseDelay = <span class="dig">0.15</span>
 Settings.OcrTextSearch = True
 Settings.OcrTextRead = True
@@ -88,28 +88,53 @@ towers = range(<span class="dig">8</span>,<span class="dig">1</span>,-<span clas
 <span class="cmt">###</span>
 
 <span class="cmt">### SET UP YOUR ROUTINE HERE</span>
+<span class="kw">def</span> claim_gift():
+    return_to_main_screen()
+    sri.<span class="skw">click</span>(png.mainscreen_gift,<span class="dig">5</span>)
+    sri.<span class="skw">click</span>(png.buttons_gift_claim,<span class="dig">5</span>)
+    return_to_main_screen()
 
 <span class="kw">def</span> routine():
     return_to_main_screen()
-    complete_honor()
-    complete_events()
-    complete_activity()
-    clear_invasions()
-    clear_dungeon()
-windows = <span class="dig">1</span>
-last_login = Pattern(png.container_server_last_login).similar(<span class="dig">0.95</span>)
-<span class="kw">for</span> i <span class="kw">in</span> xrange(windows):
-    <span class="kw">for</span> image <span class="kw">in</span> [png.container_server_kong_kings_landing,png.container_server_kong_winterfell]:
-        pattern = Pattern(image).similar(<span class="dig">0.95</span>)
 
-        <span class="kw">while</span>(<span class="kw">not</span> sri.click_best_match(Pattern(png.container_select_server).similar(<span class="dig">0.60</span>),<span class="dig">3</span>)):
-            <span class="kw">pass</span>
-        <span class="kw">if</span>(<span class="kw">not</span> sri.click_best_match(pattern,<span class="dig">10</span>)):
-            sri.click_best_match(last_login,<span class="dig">10</span>)
-        <span class="cmt">#type("r",KeyModifier.CTRL)</span>
-        <span class="skw">sleep</span>(<span class="dig">20</span>)
-        routine()
-    <span class="skw">type</span>(Key.TAB,KeyModifier.ALT)
+    clear_dungeon()
+    return_to_main_screen()
+
+    clear_invasions()
+
+    return_to_main_screen()
+    complete_honor()
+    complete_activity()
+
+    complete_events()
+    claim_gift()
+
+<span class="cmt">#return_to_main_screen()</span>
+<span class="cmt">#use_temple(800)</span>
+windows = <span class="dig">2</span>
+last_login = Pattern(png.container_server_last_login).similar(<span class="dig">0.95</span>)
+
+sleep_action_list = [[<span class="dig">0</span>,routine],[<span class="dig">300</span>,claim_gift],[<span class="dig">600</span>,claim_gift],[<span class="dig">1200</span>,claim_gift],[<span class="dig">1800</span>,claim_gift],[<span class="dig">1800</span>,claim_gift]]
+<span class="kw">for</span> [sleep_time,the_action] <span class="kw">in</span> sleep_action_list[:<span class="dig">0</span>]:
+    <span class="skw">sleep</span>(sleep_time)
+    <span class="kw">for</span> i <span class="kw">in</span> xrange(windows):
+        <span class="kw">for</span> image <span class="kw">in</span> [png.container_server_kong_kings_landing,png.container_server_kong_winterfell][::-<span class="dig">1</span>]:
+            pattern = Pattern(image).similar(<span class="dig">0.80</span>)
+
+            <span class="kw">while</span>(<span class="kw">not</span> sri.click_best_match(Pattern(png.container_select_server).similar(<span class="dig">0.60</span>),<span class="dig">10</span>)):
+                <span class="kw">pass</span>
+            <span class="kw">if</span>(<span class="kw">not</span> sri.click_best_match(pattern,<span class="dig">10</span>)):
+                sri.click_best_match(last_login,<span class="dig">10</span>)
+            <span class="cmt">#type("r",KeyModifier.CTRL)</span>
+            sri.exists(png.mainscreen_adventure,<span class="dig">20</span>)
+            the_action()
+        <span class="kw">if</span>(i &lt; windows-<span class="dig">1</span>):
+            <span class="skw">type</span>(Key.TAB,KeyModifier.ALT)
+        <span class="skw">sleep</span>(<span class="dig">3</span>)
+routine()
+<span class="skw">type</span>(Key.TAB,KeyModifier.ALT)
+<span class="skw">sleep</span>(<span class="dig">10</span>)
+routine()
 </pre>
 </body>
 </html>
