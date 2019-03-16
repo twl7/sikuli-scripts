@@ -240,7 +240,9 @@ class SikuliRegionInterface(SingletonClass):
         return self.click(image, timeout, region, False)
 
     ### CUSTOM FUNCTIONS
-    def click_top(self, pattern):
+    def click_top(self, pattern, timeout = 0):
+        if(timeout > 0):
+            self.exists(pattern,timeout)
         matches = self.find_all(pattern)
         if(len(matches) == 0):
             Debug.log("Click Top: No matches found")

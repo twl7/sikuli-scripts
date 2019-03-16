@@ -51,13 +51,6 @@ def fz_boss_tab():
         sleep(300)
         make_fzone_trades(5,fzone_trades,1,1,separate_trades=False)  
         
-def partial_boss():
-    run_bosses(1,30)
-    sri.switch_tab_left()
-    run_bosses(2,60)
-    sri.switch_tab_right()
-    run_bosses(1,400)
-
 def towers(x):  
     auto_towers(x)
     sleep(200)
@@ -69,11 +62,11 @@ def towers(x):
 ###   SET UP YOUR ROUTINE HERE
 
 #run_world_boss(2,100)    
-#run_bosses(1,270)
+#run_bosses(2,19)
 tab_bosses(run_time=10800)
 
 
-#towers(60)
+#towers(12)
 #fz_boss(2)  
 #fz_boss_tab()
 rush = fzone_trades + [png.fzone_rare_to_gold]

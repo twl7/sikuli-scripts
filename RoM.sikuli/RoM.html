@@ -123,13 +123,6 @@ fzone_trades = pre_2K_trades + [png.FZONE_SILVER_TO_GOLD] + gold_trades
         <span class="skw">sleep</span>(<span class="dig">300</span>)
         make_fzone_trades(<span class="dig">5</span>,fzone_trades,<span class="dig">1</span>,<span class="dig">1</span>,separate_trades=False)
 
-<span class="kw">def</span> partial_boss():
-    run_bosses(<span class="dig">1</span>,<span class="dig">30</span>)
-    sri.switch_tab_left()
-    run_bosses(<span class="dig">2</span>,<span class="dig">60</span>)
-    sri.switch_tab_right()
-    run_bosses(<span class="dig">1</span>,<span class="dig">400</span>)
-
 <span class="kw">def</span> towers(x):
     auto_towers(x)
     <span class="skw">sleep</span>(<span class="dig">200</span>)
@@ -141,11 +134,11 @@ fzone_trades = pre_2K_trades + [png.FZONE_SILVER_TO_GOLD] + gold_trades
 <span class="cmt">###   SET UP YOUR ROUTINE HERE</span>
 
 <span class="cmt">#run_world_boss(2,100)    </span>
-<span class="cmt">#run_bosses(1,270)</span>
+<span class="cmt">#run_bosses(2,19)</span>
 tab_bosses(run_time=<span class="dig">10800</span>)
 
 
-<span class="cmt">#towers(60)</span>
+<span class="cmt">#towers(12)</span>
 <span class="cmt">#fz_boss(2)  </span>
 <span class="cmt">#fz_boss_tab()</span>
 rush = fzone_trades + [png.fzone_rare_to_gold]
