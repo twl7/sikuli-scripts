@@ -25,20 +25,29 @@ damage_honor = [png.raid_battlescreen_h_1, png.raid_battlescreen_h_5,
               png.raid_battlescreen_h_20, png.raid_battlescreen_h_20x5]
 
 
-### Guild
-def summon_guild_raids(limit):
+### GUILD
+def summon_guild_raids(limit, skip = 0):
     limit = max(limit, 1)
+    dismiss_mod = 10
     d_t = 5
     for pic in [png.mainscreen_tab_guild, png.guild_war_room]:
         sri.click(pic, 5)
-    scroll_down = Pattern(png.guild_war_room_scroll_bottom).similar(0.99)
+    for pic in [png.guild_war_room_join_all, png.popup_choice_yes]:
+        sri.click(pic, d_t)
+    scroll_down = sri.find(Pattern(png.guild_war_room_scroll_bottom).similar(0.98))
     summon = Pattern(png.guild_war_room_summon).similar(0.80)
     hov = sri.find(png.mainscreen_tab_guild_selected, d_t)
+    for i in xrange(skip):
+        sri.click(scroll_down)
+        sri.hover(hov)
+        time.sleep(0.2)
     for i in xrange(limit):
+        if((i+1)%dismiss_mod == 0):
+            dismiss_logoff()
         sri.click_top(summon,d_t)
         sri.click(png.popup_ok_confirm)
         #sri.click_all(summon, wait_between = 0.1)
-        sri.click_all(scroll_down)
+        sri.click(scroll_down)
         sri.hover(hov)
         time.sleep(0.2)
     for pic in [png.guild_war_room_join_all, png.popup_choice_yes]:
@@ -46,10 +55,10 @@ def summon_guild_raids(limit):
     sri.click(png.mainscreen_tab_home)
         
 def collect_guild_campaigns():
-    default_time = d_t = 10
+    default_time = d_t = 6
     completed = Pattern(png.guild_campaign_menu_tab_completed).similar(0.98)
     gtabselect = png.mainscreen_tab_guild_selected
-    
+    hov = sri.find(png.mainscreen_tab_guild) or Location(0,0)
     for pic in [png.mainscreen_tab_guild, png.guild_campaign, completed]:
         sri.click(pic, timeout = d_t )
 
@@ -62,19 +71,20 @@ def collect_guild_campaigns():
         ##  count += 1
         time.sleep(1)
         sri.click_top(png.guild_campaign_menu_join)
-        sri.click(png.guild_campaign_map_close_result, default_time)
-        
+        sri.click(png.guild_campaign_map_close_result, d_t)
+        sri.click(png.guild_campaign_map_close_result, 2)
         while(sri.exists(png.guild_campaign_map_node_collect, d_t)):
             for pic in [png.guild_campaign_map_node_collect, \
                         png.guild_campaign_map_node_loot] + [gtabselect]*4:
                 sri.click(pic, d_t)
+                sri.hover(hov)
         for pic in [png.guild_campaign_map_close, png.guild_campaign, completed]:
             sri.click(pic, d_t)
         time.sleep(1)
 
         #loot
         #for i in xrange(count):
-        for pic in [png.guild_campaign_menu_loot] + [gtabselect]*4:
+        for pic in [png.guild_campaign_menu_loot, png.popup_ok_confirm] + [gtabselect]*4:
             sri.click(pic, d_t)
         #end while menu join
     sri.click(png.mainscreen_tab_home)
@@ -125,6 +135,7 @@ def join_and_hit_raid(damage_index = 0, share = False):
 #call from home tab
 def summon_and_hit_raids(num_to_summon):
     d_t = 7
+    dismiss_mod = 8
     hov = sri.find(png.mainscreen_tab_raid) or \
           sri.find(png.mainscreen_tab_raid_selected)
     for pic in [png.mainscreen_tab_raid, png.raid_menu_refresh]:
@@ -140,17 +151,20 @@ def summon_and_hit_raids(num_to_summon):
             sri.click(png.raid_menu_engage_summon, d_t)
             hit_raid(0, True)
         sri.click(png.raid_menu_refresh,d_t)
-        if((index+1)%10 == 0):
+        if((index+1)%dismiss_mod == 0):
             dismiss_logoff()
     sri.click(png.mainscreen_tab_home,d_t)
 
 def hit_new_raids(damage_index):
     d_t = 5
-    
+    dismiss_mod = 10
     sri.click(png.mainscreen_tab_raid, d_t)
-    
+    i = 0
     while(sri.click(png.raid_menu_engage, d_t)):
         hit_raid(damage_index, False)
+        i+=1
+        if(i % dismiss_mod == 0):
+            dismiss_logoff()
 
     sri.click(png.mainscreen_tab_home,d_t)
 

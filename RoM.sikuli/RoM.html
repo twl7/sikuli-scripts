@@ -92,7 +92,7 @@ gold_trades =  [
                 png.fzone_good_to_gold,
                 png.fzone_rare_to_gold,
                 png.fzone_epic_to_gold,
-                png.fzone_legendary_to_gold,
+                <span class="cmt">#png.fzone_legendary_to_gold,</span>
                 png.FZONE_SILVER_TO_GOLD
                 ]
 <span class="cmt">#silver_trades = [png.fzone_elixir_to_silver]</span>
@@ -106,21 +106,14 @@ fzone_trades = pre_2K_trades + [png.FZONE_SILVER_TO_GOLD] + gold_trades
         run_bosses(tabs,<span class="dig">14</span>)
         make_fzone_trades(<span class="dig">5</span>,fzone_trades,<span class="dig">1</span>,<span class="dig">1</span>,separate_trades=False)
 
-<span class="kw">def</span> fz_boss2():
-    <span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">100</span>):
-        run_bosses(<span class="dig">2</span>,<span class="dig">14</span>)
-        make_fzone_trades(<span class="dig">5</span>,fzone_trades,<span class="dig">1</span>,<span class="dig">1</span>,separate_trades=False)
-        <span class="kw">for</span> t <span class="kw">in</span> xrange(<span class="dig">2</span>):
-            sri.switch_tab_right()
-
 <span class="kw">def</span> fz_boss_tab():
-    <span class="kw">for</span> run_time <span class="kw">in</span> [<span class="dig">3600</span>] + [<span class="dig">2800</span>] * <span class="dig">200</span>:
+    <span class="kw">for</span> run_time <span class="kw">in</span> [<span class="dig">2800</span>] + [<span class="dig">2800</span>] * <span class="dig">200</span>:
         tab_bosses(run_time)
         <span class="kw">for</span> j <span class="kw">in</span> xrange(<span class="dig">5</span>):
             <span class="skw">sleep</span>(<span class="dig">1</span>)
             auto_battle(<span class="dig">0</span>)
             sri.switch_tab_right()
-        <span class="skw">sleep</span>(<span class="dig">300</span>)
+        <span class="skw">sleep</span>(<span class="dig">240</span>)
         make_fzone_trades(<span class="dig">5</span>,fzone_trades,<span class="dig">1</span>,<span class="dig">1</span>,separate_trades=False)
 
 <span class="kw">def</span> towers(x):
@@ -134,16 +127,19 @@ fzone_trades = pre_2K_trades + [png.FZONE_SILVER_TO_GOLD] + gold_trades
 <span class="cmt">###   SET UP YOUR ROUTINE HERE</span>
 
 <span class="cmt">#run_world_boss(2,100)    </span>
-<span class="cmt">#run_bosses(2,19)</span>
-tab_bosses(run_time=<span class="dig">10800</span>)
+<span class="cmt">#run_bosses(2,31)</span>
+tab_bosses(run_time=<span class="dig">70000</span>)
 
 
-<span class="cmt">#towers(12)</span>
+<span class="cmt">#towers(180)</span>
 <span class="cmt">#fz_boss(2)  </span>
 <span class="cmt">#fz_boss_tab()</span>
 rush = fzone_trades + [png.fzone_rare_to_gold]
-<span class="cmt">#make_fzone_trades(4,gold_trades,-1,wait_time= 1000,separate_trades= False) </span>
-<span class="cmt">#make_fzone_trades(4, [rush]*0 + [fzone_trades]*1+[gold_trades]*4,1000,wait_time= 1000,separate_trades= True)</span>
+go = gold_trades
+fz = fzone_trades
+curr_array = [rush]*<span class="dig">0</span> + [fz+go]*<span class="dig">4</span> + [go]*<span class="dig">0</span> <span class="cmt">#[go,go,go,go]</span>
+<span class="cmt">#make_fzone_trades(4, curr_array,1000,wait_time= 1000,separate_trades= True)  </span>
+<span class="cmt">#make_fzone_trades(4,gold_trades,-1,wait_time= 1000,separate_trades= False)</span>
 
 </pre>
 </body>

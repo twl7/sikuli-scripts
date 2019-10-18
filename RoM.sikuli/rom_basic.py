@@ -126,7 +126,7 @@ def run_bosses(number_of_tabs,number_of_fights):
     for iteration in xrange(number_of_fights):
         for tab in xrange(number_of_tabs - 1):
             sri.click(victory,1)
-            sri.click_best_match(b_r_b,2)
+            sri.click_best_match(b_r_b,3)
             sri.switch_tab_left()
             
         sri.click(victory,1)
@@ -141,7 +141,9 @@ def run_bosses(number_of_tabs,number_of_fights):
         sri.hover(hover_location)
         
         timing = current_time()
-        
+
+        #sri.click(png.battle_surrender_button,3)
+        #sri.click(png.battle_confirm,3)
         sri.exists_array([victory,boss_button],1000)
         write_to_file("boss times.txt","a",(current_time()-timing).total_seconds())
 

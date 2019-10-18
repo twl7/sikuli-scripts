@@ -97,20 +97,29 @@ damage_honor = [png.raid_battlescreen_h_1, png.raid_battlescreen_h_5,
               png.raid_battlescreen_h_20, png.raid_battlescreen_h_20x5]
 
 
-<span class="cmt">### Guild</span>
-<span class="kw">def</span> summon_guild_raids(limit):
+<span class="cmt">### GUILD</span>
+<span class="kw">def</span> summon_guild_raids(limit, skip = <span class="dig">0</span>):
     limit = max(limit, <span class="dig">1</span>)
+    dismiss_mod = <span class="dig">10</span>
     d_t = <span class="dig">5</span>
     <span class="kw">for</span> pic <span class="kw">in</span> [png.mainscreen_tab_guild, png.guild_war_room]:
         sri.<span class="skw">click</span>(pic, <span class="dig">5</span>)
-    scroll_down = Pattern(png.guild_war_room_scroll_bottom).similar(<span class="dig">0.99</span>)
+    <span class="kw">for</span> pic <span class="kw">in</span> [png.guild_war_room_join_all, png.popup_choice_yes]:
+        sri.<span class="skw">click</span>(pic, d_t)
+    scroll_down = sri.<span class="skw">find</span>(Pattern(png.guild_war_room_scroll_bottom).similar(<span class="dig">0.98</span>))
     summon = Pattern(png.guild_war_room_summon).similar(<span class="dig">0.80</span>)
     hov = sri.<span class="skw">find</span>(png.mainscreen_tab_guild_selected, d_t)
+    <span class="kw">for</span> i <span class="kw">in</span> xrange(skip):
+        sri.<span class="skw">click</span>(scroll_down)
+        sri.hover(hov)
+        time.<span class="skw">sleep</span>(<span class="dig">0.2</span>)
     <span class="kw">for</span> i <span class="kw">in</span> xrange(limit):
+        <span class="kw">if</span>((i+<span class="dig">1</span>)%dismiss_mod == <span class="dig">0</span>):
+            dismiss_logoff()
         sri.click_top(summon,d_t)
         sri.<span class="skw">click</span>(png.popup_ok_confirm)
         <span class="cmt">#sri.click_all(summon, wait_between = 0.1)</span>
-        sri.click_all(scroll_down)
+        sri.<span class="skw">click</span>(scroll_down)
         sri.hover(hov)
         time.<span class="skw">sleep</span>(<span class="dig">0.2</span>)
     <span class="kw">for</span> pic <span class="kw">in</span> [png.guild_war_room_join_all, png.popup_choice_yes]:
@@ -118,10 +127,10 @@ damage_honor = [png.raid_battlescreen_h_1, png.raid_battlescreen_h_5,
     sri.<span class="skw">click</span>(png.mainscreen_tab_home)
 
 <span class="kw">def</span> collect_guild_campaigns():
-    default_time = d_t = <span class="dig">10</span>
+    default_time = d_t = <span class="dig">6</span>
     completed = Pattern(png.guild_campaign_menu_tab_completed).similar(<span class="dig">0.98</span>)
     gtabselect = png.mainscreen_tab_guild_selected
-
+    hov = sri.<span class="skw">find</span>(png.mainscreen_tab_guild) <span class="kw">or</span> Location(<span class="dig">0</span>,<span class="dig">0</span>)
     <span class="kw">for</span> pic <span class="kw">in</span> [png.mainscreen_tab_guild, png.guild_campaign, completed]:
         sri.<span class="skw">click</span>(pic, timeout = d_t )
 
@@ -134,19 +143,20 @@ damage_honor = [png.raid_battlescreen_h_1, png.raid_battlescreen_h_5,
         <span class="cmt">##  count += 1</span>
         time.<span class="skw">sleep</span>(<span class="dig">1</span>)
         sri.click_top(png.guild_campaign_menu_join)
-        sri.<span class="skw">click</span>(png.guild_campaign_map_close_result, default_time)
-
+        sri.<span class="skw">click</span>(png.guild_campaign_map_close_result, d_t)
+        sri.<span class="skw">click</span>(png.guild_campaign_map_close_result, <span class="dig">2</span>)
         <span class="kw">while</span>(sri.exists(png.guild_campaign_map_node_collect, d_t)):
             <span class="kw">for</span> pic <span class="kw">in</span> [png.guild_campaign_map_node_collect, \
                         png.guild_campaign_map_node_loot] + [gtabselect]*<span class="dig">4</span>:
                 sri.<span class="skw">click</span>(pic, d_t)
+                sri.hover(hov)
         <span class="kw">for</span> pic <span class="kw">in</span> [png.guild_campaign_map_close, png.guild_campaign, completed]:
             sri.<span class="skw">click</span>(pic, d_t)
         time.<span class="skw">sleep</span>(<span class="dig">1</span>)
 
         <span class="cmt">#loot</span>
         <span class="cmt">#for i in xrange(count):</span>
-        <span class="kw">for</span> pic <span class="kw">in</span> [png.guild_campaign_menu_loot] + [gtabselect]*<span class="dig">4</span>:
+        <span class="kw">for</span> pic <span class="kw">in</span> [png.guild_campaign_menu_loot, png.popup_ok_confirm] + [gtabselect]*<span class="dig">4</span>:
             sri.<span class="skw">click</span>(pic, d_t)
         <span class="cmt">#end while menu join</span>
     sri.<span class="skw">click</span>(png.mainscreen_tab_home)
@@ -197,6 +207,7 @@ Called in raid battle screen
 <span class="cmt">#call from home tab</span>
 <span class="kw">def</span> summon_and_hit_raids(num_to_summon):
     d_t = <span class="dig">7</span>
+    dismiss_mod = <span class="dig">8</span>
     hov = sri.<span class="skw">find</span>(png.mainscreen_tab_raid) <span class="kw">or</span> \
           sri.<span class="skw">find</span>(png.mainscreen_tab_raid_selected)
     <span class="kw">for</span> pic <span class="kw">in</span> [png.mainscreen_tab_raid, png.raid_menu_refresh]:
@@ -212,17 +223,20 @@ Called in raid battle screen
             sri.<span class="skw">click</span>(png.raid_menu_engage_summon, d_t)
             hit_raid(<span class="dig">0</span>, True)
         sri.<span class="skw">click</span>(png.raid_menu_refresh,d_t)
-        <span class="kw">if</span>((index+<span class="dig">1</span>)%<span class="dig">10</span> == <span class="dig">0</span>):
+        <span class="kw">if</span>((index+<span class="dig">1</span>)%dismiss_mod == <span class="dig">0</span>):
             dismiss_logoff()
     sri.<span class="skw">click</span>(png.mainscreen_tab_home,d_t)
 
 <span class="kw">def</span> hit_new_raids(damage_index):
     d_t = <span class="dig">5</span>
-
+    dismiss_mod = <span class="dig">10</span>
     sri.<span class="skw">click</span>(png.mainscreen_tab_raid, d_t)
-
+    i = <span class="dig">0</span>
     <span class="kw">while</span>(sri.<span class="skw">click</span>(png.raid_menu_engage, d_t)):
         hit_raid(damage_index, False)
+        i+=<span class="dig">1</span>
+        <span class="kw">if</span>(i % dismiss_mod == <span class="dig">0</span>):
+            dismiss_logoff()
 
     sri.<span class="skw">click</span>(png.mainscreen_tab_home,d_t)
 

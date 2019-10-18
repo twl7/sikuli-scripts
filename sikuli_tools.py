@@ -241,16 +241,21 @@ class SikuliRegionInterface(SingletonClass):
 
     ### CUSTOM FUNCTIONS
     def click_top(self, pattern, timeout = 0):
+        match = self.find_top(pattern, timeout)
+        if(match == None):
+            return False
+        return self.click(match)
+        
+
+    def find_top(self, pattern, timeout = 0):
         if(timeout > 0):
             self.exists(pattern,timeout)
         matches = self.find_all(pattern)
         if(len(matches) == 0):
-            Debug.log("Click Top: No matches found")
-            return False
+            Debug.log("Find Top: No matches found")
+            return None
         matches.sort(key = lambda m: m.y)
-        self.click(matches[0])
-        return True
-            
+        return matches[0]
 
     ### BROWSER INTERACTION
     def switch_tab_right(self):

@@ -13,35 +13,57 @@ Settings.MoveMouseDelay = 0.05
 
 
 def cycle():
-    summon_guild_raids(40)
-    dismiss_logoff()
-    hit_new_raids(0)
-    dismiss_logoff()
-    hit_active_raids(0,10)
-    dismiss_logoff()
-    loot_raids(10)
-    dismiss_logoff()
-    
+    #event no's: 23, 35.39,46    
+    shi = False
+    if(shi):
+        summon_guild_raids(1,22) #shi
+        dismiss_logoff()
+        hit_new_raids(0)
+        dismiss_logoff()
+        hit_active_raids(0,3)
+        dismiss_logoff()
+        loot_raids(2)
+        dismiss_logoff()
+    else: #twd
+        summon_guild_raids(1,34)
+        dismiss_logoff()
+        hit_new_raids(0)
+        dismiss_logoff()
+        hit_active_raids(0,4)
+        dismiss_logoff()
+        loot_raids(2)
+        dismiss_logoff()
 def test():
     #sri.click_top(png.raid_menu_engage,5)
-    #summon_and_hit_raids(35)
+    #summon_and_hit_raids(10)
     timetime = time.clock()
     #cycle()
-    Debug.log(str(time.clock()-timetime))    
+      
     #hit_active_raids(0,5)
-    #hit_new_raids(0)
+   
+    #hit_new_raids(0) 
+    summon_and_hit_raids(55)
     collect_guild_campaigns() 
+    hit_new_raids(0)
+    dismiss_logoff()
+    #loot_raids(300)
+    Debug.log(str(time.clock()-timetime))  
     
 def routine():
     #hit_new_raids(0)
     #collect_guild_campaigns() 
-    for i in xrange(55):
+    six = six_hours = 6*60*60
+    x = time.clock()
+    ti = 0
+    while(time.clock() -x < ti):
             cycle()
-    for repeats in xrange(5):
-        summon_and_hit_raids(45)
-        for i in xrange(59):
+    for repeats in xrange(50):
+        collect_guild_campaigns() 
+        summon_and_hit_raids(65)
+        x = time.clock()
+        while(time.clock()-x < six_hours):
             cycle()
-            
+ 
 testing = 0
 if(testing):
     test()   

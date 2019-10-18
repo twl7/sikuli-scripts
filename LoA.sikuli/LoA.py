@@ -60,6 +60,12 @@ for [sleep_time,the_action] in sleep_action_list[:0]:
             type(Key.TAB,KeyModifier.ALT)
         sleep(3)
 routine()
-type(Key.TAB,KeyModifier.ALT)
-sleep(10)
-routine()
+def next_tab():
+    type(Key.TAB,KeyModifier.CTRL)
+    sleep(10)
+    routine()
+def next_window():
+    type(Key.TAB,KeyModifier.ALT)
+    sleep(10)
+    routine()
+next_window()

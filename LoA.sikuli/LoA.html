@@ -132,9 +132,15 @@ sleep_action_list = [[<span class="dig">0</span>,routine],[<span class="dig">300
             <span class="skw">type</span>(Key.TAB,KeyModifier.ALT)
         <span class="skw">sleep</span>(<span class="dig">3</span>)
 routine()
-<span class="skw">type</span>(Key.TAB,KeyModifier.ALT)
-<span class="skw">sleep</span>(<span class="dig">10</span>)
-routine()
+<span class="kw">def</span> next_tab():
+    <span class="skw">type</span>(Key.TAB,KeyModifier.CTRL)
+    <span class="skw">sleep</span>(<span class="dig">10</span>)
+    routine()
+<span class="kw">def</span> next_window():
+    <span class="skw">type</span>(Key.TAB,KeyModifier.ALT)
+    <span class="skw">sleep</span>(<span class="dig">10</span>)
+    routine()
+next_window()
 </pre>
 </body>
 </html>

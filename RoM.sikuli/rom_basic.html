@@ -198,7 +198,7 @@ hover_location = sri.<span class="skw">find</span>(png.CONTAINER_ROM_TITLE).getC
     <span class="kw">for</span> iteration <span class="kw">in</span> xrange(number_of_fights):
         <span class="kw">for</span> tab <span class="kw">in</span> xrange(number_of_tabs - <span class="dig">1</span>):
             sri.<span class="skw">click</span>(victory,<span class="dig">1</span>)
-            sri.click_best_match(b_r_b,<span class="dig">2</span>)
+            sri.click_best_match(b_r_b,<span class="dig">3</span>)
             sri.switch_tab_left()
 
         sri.<span class="skw">click</span>(victory,<span class="dig">1</span>)
@@ -214,6 +214,8 @@ hover_location = sri.<span class="skw">find</span>(png.CONTAINER_ROM_TITLE).getC
 
         timing = current_time()
 
+        <span class="cmt">#sri.click(png.battle_surrender_button,3)</span>
+        <span class="cmt">#sri.click(png.battle_confirm,3)</span>
         sri.exists_array([victory,boss_button],<span class="dig">1000</span>)
         write_to_file(<span class="str">"boss times.txt"</span>,<span class="str">"a"</span>,(current_time()-timing).total_seconds())
 

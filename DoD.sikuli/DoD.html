@@ -85,33 +85,55 @@ Settings.MoveMouseDelay = <span class="dig">0.05</span>
 
 
 <span class="kw">def</span> cycle():
-    summon_guild_raids(<span class="dig">40</span>)
-    dismiss_logoff()
-    hit_new_raids(<span class="dig">0</span>)
-    dismiss_logoff()
-    hit_active_raids(<span class="dig">0</span>,<span class="dig">10</span>)
-    dismiss_logoff()
-    loot_raids(<span class="dig">10</span>)
-    dismiss_logoff()
-
+    <span class="cmt">#event no's: 23, 35.39,46    </span>
+    shi = False
+    <span class="kw">if</span>(shi):
+        summon_guild_raids(<span class="dig">1</span>,<span class="dig">22</span>) <span class="cmt">#shi</span>
+        dismiss_logoff()
+        hit_new_raids(<span class="dig">0</span>)
+        dismiss_logoff()
+        hit_active_raids(<span class="dig">0</span>,<span class="dig">3</span>)
+        dismiss_logoff()
+        loot_raids(<span class="dig">2</span>)
+        dismiss_logoff()
+    <span class="kw">else</span>: <span class="cmt">#twd</span>
+        summon_guild_raids(<span class="dig">1</span>,<span class="dig">34</span>)
+        dismiss_logoff()
+        hit_new_raids(<span class="dig">0</span>)
+        dismiss_logoff()
+        hit_active_raids(<span class="dig">0</span>,<span class="dig">4</span>)
+        dismiss_logoff()
+        loot_raids(<span class="dig">2</span>)
+        dismiss_logoff()
 <span class="kw">def</span> test():
     <span class="cmt">#sri.click_top(png.raid_menu_engage,5)</span>
-    <span class="cmt">#summon_and_hit_raids(35)</span>
+    <span class="cmt">#summon_and_hit_raids(10)</span>
     timetime = time.clock()
     <span class="cmt">#cycle()</span>
-    Debug.log(str(time.clock()-timetime))
+
     <span class="cmt">#hit_active_raids(0,5)</span>
-    <span class="cmt">#hit_new_raids(0)</span>
+
+    <span class="cmt">#hit_new_raids(0) </span>
+    summon_and_hit_raids(<span class="dig">55</span>)
     collect_guild_campaigns()
+    hit_new_raids(<span class="dig">0</span>)
+    dismiss_logoff()
+    <span class="cmt">#loot_raids(300)</span>
+    Debug.log(str(time.clock()-timetime))
 
 <span class="kw">def</span> routine():
     <span class="cmt">#hit_new_raids(0)</span>
     <span class="cmt">#collect_guild_campaigns() </span>
-    <span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">55</span>):
+    six = six_hours = <span class="dig">6</span>*<span class="dig">60</span>*<span class="dig">60</span>
+    x = time.clock()
+    ti = <span class="dig">0</span>
+    <span class="kw">while</span>(time.clock() -x &lt; ti):
             cycle()
-    <span class="kw">for</span> repeats <span class="kw">in</span> xrange(<span class="dig">5</span>):
-        summon_and_hit_raids(<span class="dig">45</span>)
-        <span class="kw">for</span> i <span class="kw">in</span> xrange(<span class="dig">59</span>):
+    <span class="kw">for</span> repeats <span class="kw">in</span> xrange(<span class="dig">50</span>):
+        collect_guild_campaigns()
+        summon_and_hit_raids(<span class="dig">65</span>)
+        x = time.clock()
+        <span class="kw">while</span>(time.clock()-x &lt; six_hours):
             cycle()
 
 testing = <span class="dig">0</span>
